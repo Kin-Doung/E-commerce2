@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('contact_info');
             $table->foreignId('address_id')
-                ->constrained('address')
+                ->constrained()
                 ->onDelete('cascade');
             $table->timestamps();
         });
