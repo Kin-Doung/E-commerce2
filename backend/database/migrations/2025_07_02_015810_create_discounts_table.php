@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->decimal('discount_percentage');
+            $table->foreignId('stock_id',)
+                ->constrained('stocks')
+                ->onDelete('cascade');
+            $table->foreignId('product_id',)
+                ->constrained('products')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }
