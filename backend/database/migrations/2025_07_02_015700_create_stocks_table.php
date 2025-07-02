@@ -15,12 +15,8 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('product_name');
+            $table->string('name');
             $table->integer('quantity');
-            $table->string('image');
-            $table->foreignId('category_id')
-                ->constrained('categories')
-                ->onDelete('cascade');
             $table->timestamps();
         });
     }

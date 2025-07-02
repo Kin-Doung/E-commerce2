@@ -9,11 +9,8 @@ class Stock extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'product_name',
-        'product_id',
+        'name',
         'quantity',
-        'image',
-        'category_id',
     ];
     public function category(){
         return $this->hasMany(Category::class);
