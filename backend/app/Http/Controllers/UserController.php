@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Stock;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Models\User;
 
-class StockController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $stock = Stock::all();
-        return response()->json($stock);
+        $users = User::all();
+        return response()->json($users);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -25,25 +26,29 @@ class StockController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'quantity' => 'required|numeric',
+            'email' => 'required|string|email|unique:users,email|max:255',
+            'password' => 'required|string|max:255',
         ]);
 
-        $stock = Stock::create($request->all());
+        $users = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
         return response()->json([
-            'message' => 'succ',
-            'data' => $stock
+            'message' => 'User created successfully',
+            'user' => $users,
         ], 201);
     }
-
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $stock = Stock::findOrFail($id);
-        return response()->json($stock);
+        $users = User::findOrFail($id);
+        return response()->json($users);
     }
 
     /**
@@ -51,21 +56,14 @@ class StockController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Find the category or fail
-        $category = Category::findOrFail($id);
-
-        // Validate request data
+        $user = User::findOrFail($id);
         $validated = $request->validate([
             'name' => 'string',
-            'stock_id' => 'integer',
+            'email' => 'email',
         ]);
-
-        // Update the category with validated data
-        $category->update($validated);
-
-        return response()->json($category);
+        $user->update($validated);
+        return response()->json($user);
     }
-
 
 
     /**
@@ -73,10 +71,10 @@ class StockController extends Controller
      */
     public function destroy(string $id)
     {
-        $stock = Stock::findOrFail($id);
-        $stock->delete();
+        $users = User::findOrFail($id);
+        $users->delete();
         return response()->json([
-            'message' => 'stock deletd succ',
+            'message' => 'user deleted succ',
         ]);
     }
 }

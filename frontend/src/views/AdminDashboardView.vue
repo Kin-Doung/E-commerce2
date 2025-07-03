@@ -1605,6 +1605,7 @@ import {
   CheckCircleIcon, AlertCircleIcon, InfoIcon
 } from 'lucide-vue-next'
 import { useAuthStore } from '../stores/auth'
+import button from '@/components/ui/button.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

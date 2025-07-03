@@ -131,6 +131,7 @@ import { ref, onMounted } from 'vue'
 import { DropletIcon, LeafIcon, ShieldIcon, FilterIcon, RecycleIcon, AwardIcon, TruckIcon } from 'lucide-vue-next'
 import ProductCard from '../components/ProductCard.vue'
 import { useProductStore } from '../stores/products'
+import button from '@/components/ui/button.vue'
 
 const productStore = useProductStore()
 const email = ref('')
