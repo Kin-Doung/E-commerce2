@@ -139,7 +139,7 @@
       </div>
     </nav>
 
-    <div class="flex pt-16">
+    <div class="flex">
       <!-- Sidebar -->
       <div :class="`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg border-r border-gray-200 transition-transform duration-300 ease-in-out pt-16 lg:pt-0`">
         <div class="flex flex-col h-full">
