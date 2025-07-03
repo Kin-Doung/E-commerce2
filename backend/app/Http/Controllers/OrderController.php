@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+
 class OrderController extends Controller
 {
     /**
@@ -13,16 +14,41 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $orders = Order::with(['users'])->get();
+
+        // Optional: add total sum calculated dynamically
+        $orders->each(function ($order) {
+            $order->calculated_total = $order->items->sum('total');
+        });
+
+        return response()->json($orders);
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'address_id' => 'nullable|exists:addresses,id',
+        ]);
+
+        // Create with total default 0
+        $order = Order::create([
+            'user_id' => $validated['user_id'],
+            'address_id' => $validated['address_id'] ?? null,
+            'total' => 0
+        ]);
+
+        return response()->json([
+            'message' => 'Order created successfully',
+            'order' => $order
+        ]);
     }
+
+
 
     /**
      * Display the specified resource.
