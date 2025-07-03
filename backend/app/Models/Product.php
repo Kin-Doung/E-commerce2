@@ -8,23 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'image',
-        'category_id',
-    ];
-    public function category(){
+    protected $fillable = ['name', 'description', 'price', 'image', 'category_id'];
+
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
-    public function priview(){
+    public function priview()
+    {
         return $this->hasMany(Priview::class);
     }
-    public function orderItem(){
+    public function orderItem()
+    {
         return $this->hasMany(Product::class);
     }
-    public function inventory(){
+    public function inventory()
+    {
         return $this->belongsToMany(Inventory::class);
     }
 }
