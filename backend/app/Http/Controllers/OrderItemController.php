@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order_Item;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Order;
-
+use Illuminate\Http\Request;
 
 class OrderItemController extends Controller
 {
@@ -15,14 +13,13 @@ class OrderItemController extends Controller
      */
     public function index()
     {
-        $order_Item = Order_Item::all();
-        return response()->json($order_Item);
+        $orderItems = Order_Item::all();
+        return response()->json($orderItems);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -40,7 +37,7 @@ class OrderItemController extends Controller
 
         // Update parent order's total
         $order = Order::findOrFail($validated['order_id']);
-        $order->total = $order->orderItems()->sum('total'); // ✅ must match your relation name
+        $order->total = $order->orderItems()->sum('total');
         $order->save();
 
         return response()->json([
@@ -50,31 +47,70 @@ class OrderItemController extends Controller
         ]);
     }
 
-
-
-
-
     /**
      * Display the specified resource.
      */
-    public function show(Order_Item $order_Item)
+    public function show(string $id)
     {
-        //
+        $orderItem = Order_Item::findOrFail($id);
+        return response()->json($orderItem);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Order_Item $order_Item)
+    public function update(Request $request, string $id)
     {
-        //
+        $orderItem = Order_Item::findOrFail($id);
+
+        $validated = $request->validate([
+            'quantity' => 'sometimes|integer|min:1',
+            'price' => 'sometimes|numeric|min:0',
+        ]);
+
+        if (isset($validated['quantity'])) {
+            $orderItem->quantity = $validated['quantity'];
+        }
+
+        if (isset($validated['price'])) {
+            $orderItem->price = $validated['price'];
+        }
+
+        // Recalculate total
+        $orderItem->total = $orderItem->quantity * $orderItem->price;
+
+        $orderItem->save();
+
+        // Update parent order total
+        $order = Order::findOrFail($orderItem->order_id);
+        $order->total = $order->orderItems()->sum('total');
+        $order->save();
+
+        return response()->json([
+            'message' => 'Order item updated and order total recalculated',
+            'order_item' => $orderItem,
+            'order' => $order,
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order_Item $order_Item)
+    public function destroy(string $id)
     {
-        //
+        $orderItem = Order_Item::findOrFail($id);
+        $orderId = $orderItem->order_id;
+
+        $orderItem->delete();
+
+        // Update parent order total
+        $order = Order::findOrFail($orderId);
+        $order->total = $order->orderItems()->sum('total');
+        $order->save();
+
+        return response()->json([
+            'message' => 'Order item deleted and order total recalculated',
+            'order' => $order,
+        ]);
     }
 }

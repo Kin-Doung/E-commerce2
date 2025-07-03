@@ -12,9 +12,10 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::all();
+        $payments = Payment::with(['orders'])->get();
         return response()->json($payments);
     }
+
 
     /**
      * Store a newly created payment in storage.
@@ -23,7 +24,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'order_id' => 'required|integer|exists:orders,id',
-            'amount'  => 'required|numeric|max:255',
+            'amount'   => 'required|numeric',
         ]);
 
         $payment = Payment::create($validated);
@@ -33,6 +34,7 @@ class PaymentController extends Controller
             'data'    => $payment,
         ], 201);
     }
+
 
     /**
      * Display the specified payment.
