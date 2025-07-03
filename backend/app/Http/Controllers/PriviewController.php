@@ -14,6 +14,8 @@ class PriviewController extends Controller
     public function index()
     {
         //
+        $preview = Priview::all();
+        return response()->json($preview);
     }
 
     /**
@@ -21,7 +23,17 @@ class PriviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|integger|exists:users,id',
+            'product_id' => 'required|integer|exists:products,id',
+            'rating' => 'required|integer|max:255',
+            'cooment' => 'required|string|max:255',
+        ]);
+        $preview = Priview::create($validated);
+        return response()->json([
+            'Preview' => 'Review successfully',
+            'preview' => $preview,
+        ]);
     }
 
     /**

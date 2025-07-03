@@ -7,6 +7,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 
+
+use App\Http\Controllers\PriviewController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,6 +26,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+
+Route::apiResource('previews', PriviewController::class);
 Route::apiResource('users', UserController::class);
 Route::apiResource('stocks', StockController::class);
 Route::apiResource('categories', CategoryController::class);
