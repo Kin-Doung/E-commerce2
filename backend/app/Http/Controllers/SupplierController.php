@@ -13,38 +13,60 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        //
+        $suppliers = Supplier::all();
+        return response()->json($suppliers);
     }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'contact_info' => 'required|string|max:255',
+            'address_id'   => 'required|exists:addresses,id',
+        ]);
+
+        $suppliers = Supplier::create($validated);
+
+        return response()->json([
+            'message' => 'Supplier created successfully.',
+            'data'    => $suppliers,
+        ], 201);
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(Supplier $supplier)
+    public function show(String $id)
     {
-        //
+        $suppliers = Supplier::findOrFail($id);
+        return response()->json($suppliers);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Supplier $supplier)
+    public function update(Request $request, String $id)
     {
-        //
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'contact_info' => 'required|string|max:255',
+            'address_id'   => 'required|exists:addresses,id',
+        ]);
+
+        $supplier = Supplier::findOrFail($id);
+        $supplier->update($validated);
+
+        return response()->json([
+            'message' => 'Supplier updated successfully.',
+            'data'    => $supplier,
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Supplier $supplier)
+
+    public function destroy(String $id)
     {
-        //
+        $suppliers = Supplier::findOrFail($id);
+        $suppliers->delete();
+        return response()->json(['message' => 'category deleted succ']);
     }
 }
