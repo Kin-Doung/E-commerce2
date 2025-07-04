@@ -14,9 +14,6 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PriviewController;
 
 
-
-use App\Http\Controllers\PriviewController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
