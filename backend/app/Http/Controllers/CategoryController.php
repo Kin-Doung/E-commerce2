@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\Catch_;
+use App\Http\Requests\Category\CategoryUpdateResquest;
+use App\Http\Requests\Category\CategoryStoreRequest;
 
 class CategoryController extends Controller
 {
@@ -14,23 +14,19 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $category = Category::all();
-        return response()->json($category);
+        $categories = Category::all();
+        return response()->json($categories);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'stock_id' => 'required|exists:stocks,id'
-        ]);
+        $category = Category::create($request->validated());
 
-        $category = Category::create($validated);
         return response()->json([
-            'message' => 'succ',
+            'message' => 'Category created successfully',
             'data' => $category,
         ]);
     }
@@ -47,15 +43,14 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryUpdateResquest $request, string $id)
     {
         $category = Category::findOrFail($id);
-        $validated = $request->validate([
-            'name' =>'string',
-            'stock_id' =>'integer'
+        $category->update($request->validated());
+        return response()->json([
+            'message' => 'Category updated successfully',
+            'data' => $category,
         ]);
-        $category->update($validated);
-        return response()->json($category);
     }
 
     /**
@@ -65,6 +60,9 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->delete();
-        return response()->json(['message'=>'category deleted succ']);
+
+        return response()->json([
+            'message' => 'Category deleted successfully',
+        ]);
     }
 }

@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Address\AddressUpdateResquest;
-
-
+use App\Http\Requests\Address\AddressStoreRequest;
 
 class AddressController extends Controller
 {
@@ -16,14 +14,14 @@ class AddressController extends Controller
      */
     public function index()
     {
-        $address = Address::all();
-        return response()->json($address);
+        $addresses = Address::all();
+        return response()->json($addresses);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddressStoreResquest $request)
+    public function store(AddressStoreRequest $request)
     {
         $address = Address::create($request->validated());
 
@@ -36,7 +34,7 @@ class AddressController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(String $id)
+    public function show(string $id)
     {
         $address = Address::findOrFail($id);
         return response()->json($address);
@@ -45,22 +43,24 @@ class AddressController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AddressUpdateResquest $request, String $id)
+    public function update(AddressUpdateResquest $request, string $id)
     {
         $address = Address::findOrFail($id);
-        $validated = $request->validate();
-        $address->update($validated);
-        return response()->json($address);
-
+        $address->update($request->validated());
+        return response()->json([
+            'message' => 'Address updated successfully',
+            'data' => $address,
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(String $id)
+    public function destroy(string $id)
     {
         $address = Address::findOrFail($id);
         $address->delete();
-        return response()->json(['message' => 'address deleted succ']);
+
+        return response()->json(['message' => 'Address deleted successfully']);
     }
 }

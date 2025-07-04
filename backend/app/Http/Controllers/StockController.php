@@ -6,6 +6,8 @@ use App\Models\Stock;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Requests\Stock\StockUpdateResquest;
+use App\Http\Requests\Stock\StockStoreRequest;
 
 class StockController extends Controller
 {
@@ -21,17 +23,13 @@ class StockController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StockStoreRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'quantity' => 'required|numeric',
-        ]);
-
-        $stock = Stock::create($request->all());
+        $validated = $request->validated();
+        $stock = Stock::create($validated);
 
         return response()->json([
-            'message' => 'succ',
+            'message' => 'Stock created successfully',
             'data' => $stock
         ], 201);
     }
@@ -49,21 +47,16 @@ class StockController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+   public function update(StockUpdateResquest $request, string $id)
     {
-        // Find the category or fail
-        $category = Category::findOrFail($id);
+        $stock = Stock::findOrFail($id);
+        $validated = $request->validated();
+        $stock->update($validated);
 
-        // Validate request data
-        $validated = $request->validate([
-            'name' => 'string',
-            'stock_id' => 'integer',
+        return response()->json([
+            'message' => 'Stock updated successfully',
+            'data' => $stock
         ]);
-
-        // Update the category with validated data
-        $category->update($validated);
-
-        return response()->json($category);
     }
 
 

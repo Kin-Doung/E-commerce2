@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Stock;
+namespace App\Http\Requests\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StockUpdateResquest extends FormRequest
+class CategoryStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StockUpdateResquest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+             'name' => 'required|string|max:255',
+            'stock_id' => 'required|exists:stocks,id'
         ];
     }
 }
