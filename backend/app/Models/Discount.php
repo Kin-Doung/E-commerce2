@@ -17,4 +17,8 @@ class Discount extends Model
     {
         return Carbon::parse($value)->format('d-F-Y');
     }
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

@@ -18,4 +18,8 @@ class Stock extends Model
     public function inventory(){
         return $this->belongsTo(Inventory::class);
     }
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }
