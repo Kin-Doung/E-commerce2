@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-Route::apiResource('previews', PriviewController::class);
+Route::apiResource('priviews', PriviewController::class);
 Route::apiResource('users', UserController::class);
 Route::apiResource('stocks', StockController::class);
 Route::apiResource('categories', CategoryController::class);
