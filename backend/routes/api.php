@@ -9,6 +9,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PriviewController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,4 +34,6 @@ Route::apiResource('categories', CategoryController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('address', AddressController::class);
 Route::apiResource('supplier', SupplierController::class);
+Route::apiResource('priview', PriviewController::class);
+
 

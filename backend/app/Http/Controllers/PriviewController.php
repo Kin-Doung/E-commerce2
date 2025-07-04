@@ -13,7 +13,8 @@ class PriviewController extends Controller
      */
     public function index()
     {
-        //
+        $priview = Priview::all();
+        return response()->json($priview);
     }
 
     /**
@@ -21,7 +22,14 @@ class PriviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+            'rating' => 'required|numeric',
+            'comment' => 'required|string|max:255',
+         ]);
+         $priview = Priview::create($validated);
+         return response()->json($priview);
     }
 
     /**
