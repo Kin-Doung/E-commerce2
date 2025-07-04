@@ -4,7 +4,7 @@ namespace App\Http\Requests\Discount;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DiscountUpdateResquest extends FormRequest
+class DiscountStoreResquest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

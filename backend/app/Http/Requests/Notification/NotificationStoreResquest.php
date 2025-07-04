@@ -4,7 +4,7 @@ namespace App\Http\Requests\Notification;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class NotificationUpdateResquest extends FormRequest
+class NotificationStoreResquest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
