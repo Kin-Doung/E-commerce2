@@ -17,4 +17,8 @@ class Category extends Model
     {
         return $this->belongsTo(Stock::class);
     }
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

@@ -6,8 +6,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PriviewController;
 
 
 
@@ -35,4 +39,10 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('stocks', StockController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('products', ProductController::class);
+Route::apiResource('orders', OrderController::class);
+Route::apiResource('orderitems', OrderItemController::class);
 Route::apiResource('address', AddressController::class);
+Route::apiResource('supplier', SupplierController::class);
+Route::apiResource('priview', PriviewController::class);
+
+
