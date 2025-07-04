@@ -14,6 +14,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PriviewController;
 
 
+
+use App\Http\Controllers\PriviewController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,7 +32,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('payments', PaymentController::class);
+
+
+Route::apiResource('priviews', PriviewController::class);
 Route::apiResource('users', UserController::class);
 Route::apiResource('stocks', StockController::class);
 Route::apiResource('categories', CategoryController::class);
