@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Stock;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Requests\Stock\StockUpdateResquest;
 use App\Http\Requests\Stock\StockStoreRequest;

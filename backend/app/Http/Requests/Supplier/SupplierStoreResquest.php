@@ -4,7 +4,7 @@ namespace App\Http\Requests\Supplier;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SupplierUpdateResquest extends FormRequest
+class SupplierStoreResquest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

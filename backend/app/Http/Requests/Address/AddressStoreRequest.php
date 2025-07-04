@@ -4,7 +4,7 @@ namespace App\Http\Requests\Address;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddressStoreRequest extends FormRequest
+class AddressStoreResquest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
