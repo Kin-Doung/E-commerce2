@@ -12,8 +12,8 @@ class PriviewController extends Controller
      */
     public function index()
     {
-        $priviews = Priview::all();
-        return response()->json($priviews);
+        $priview = Priview::all();
+        return response()->json($priview);
     }
 
     /**
@@ -21,19 +21,14 @@ class PriviewController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-            'product_id' => 'required|integer|exists:products,id',
-            'rating' => 'required|integer|max:255',
+         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+            'rating' => 'required|numeric',
             'comment' => 'required|string|max:255',
-        ]);
-
-        $priview = Priview::create($validated);
-
-        return response()->json([
-            'message' => 'Review successfully created.',
-            'preview' => $priview,
-        ]);
+         ]);
+         $priview = Priview::create($validated);
+         return response()->json($priview);
     }
 
     /**
