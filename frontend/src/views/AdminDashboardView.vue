@@ -69,13 +69,18 @@ const sidebarItems = ref([
     icon: "HomeIcon",
     path: "/admin/dashboard",
   },
-{
-  id: 'Inventory',
-  name: 'Inventory',
-  icon: 'Package',
-  path: '/admin/inventory',
-},
-
+  {
+    id: "orders",
+    name: "orders",
+    icon: "Package",
+    path: "/admin/orders",
+  },
+  {
+    id: "Inventory",
+    name: "Inventory",
+    icon: "Package",
+    path: "/admin/inventory",
+  },
 
   {
     id: "Analytics",

@@ -32,7 +32,6 @@
             <th class="p-2 border text-left">ID</th>
             <th class="p-2 border text-left">Product ID</th>
             <th class="p-2 border text-left">Quantity</th>
-            <th class="p-2 border text-left">Location</th>
             <th class="p-2 border text-left">Actions</th>
           </tr>
         </thead>
@@ -41,7 +40,6 @@
             <td class="p-2">{{ index + 1 }}</td>
             <td class="p-2">{{ item.product.name }}</td>
             <td class="p-2">{{ item.quantity }}</td>
-            <td class="p-2">{{ item.location }}</td>
             <td class="p-2 relative">
               <button
                 @click="toggleMenu(index)"
@@ -87,7 +85,7 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <input v-model="currentInventory.product_id" placeholder="Product ID" type="number" class="w-full p-2 border rounded" required />
           <input v-model="currentInventory.quantity" placeholder="Quantity" type="number" class="w-full p-2 border rounded" required />
-          <input v-model="currentInventory.location" placeholder="Location" class="w-full p-2 border rounded" required />
+          <input v-model="currentInventory.stock_id" placeholder="stock_id" class="w-full p-2 border rounded" required />
           <div class="flex justify-end space-x-2">
             <button type="button" @click="cancelEdit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" :disabled="loading">Save</button>
@@ -105,7 +103,7 @@
           <p><strong>ID:</strong> {{ selectedInventory.id }}</p>
           <p><strong>Product ID:</strong> {{ selectedInventory.product_id }}</p>
           <p><strong>Quantity:</strong> {{ selectedInventory.quantity }}</p>
-          <p><strong>Location:</strong> {{ selectedInventory.location }}</p>
+          <p><strong>Stock:</strong> {{ selectedInventory.stock_id }}</p>
         </div>
         <div class="flex justify-end mt-4">
           <button @click="isShowing = false" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>

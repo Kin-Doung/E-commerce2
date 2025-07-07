@@ -47,3 +47,4 @@ Route::apiResource('supplier', SupplierController::class);
 Route::apiResource('priview', PriviewController::class);
 
 
+Route::apiResource('inventories', InventoryController::class);
