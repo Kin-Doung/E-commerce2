@@ -14,6 +14,7 @@ class Inventory extends Model
         'product_id',
         'quantity',
     ];
+<<<<<<< HEAD
     public function stock()
     {
         return $this->belongsTo(Stock::class);
@@ -22,4 +23,11 @@ class Inventory extends Model
     {
         return $this->belongsTo(Product::class);
     }
+=======
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+>>>>>>> 28fb607d6f5ed2ffb44cc1ca640279ceb7aa6693
 }

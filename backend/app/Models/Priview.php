@@ -20,4 +20,8 @@ class Priview extends Model
     public function products(){
         return $this->belongsTo(Product::class);
     }
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

@@ -30,4 +30,8 @@ class Order extends Model
     public function orderItem(){
         return $this->hasMany(Order_Item::class);
     }
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }
