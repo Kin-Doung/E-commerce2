@@ -138,7 +138,3 @@ const team = ref([
     </div>
   </div>
 </template>
-<<<<<<< HEAD
-=======
-
->>>>>>> master
