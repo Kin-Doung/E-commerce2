@@ -6,8 +6,6 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Product\ProductUpdateResquest;
-use App\Http\Requests\Product\ProductStoreRequest;
 
 class ProductController extends Controller
 {
@@ -28,9 +26,17 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductStoreRequest $request)
+    public function store(Request $request)
     {
         try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string|max:255',
+                'price' => 'required|numeric|min:0',
+                'image' => 'required|image|mimes:jpg,jpeg,png,gif,bmp|max:2048',
+                'category_id' => 'required|exists:categories,id',
+            ]);
+
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 $path = $request->file('image')->store('products', 'public');
                 $validated['image'] = $path;
@@ -38,7 +44,7 @@ class ProductController extends Controller
                 return response()->json(['message' => 'Invalid image file'], 422);
             }
 
-            $product = Product::create($request->validated());
+            $product = Product::create($validated);
 
             $product->image_url = $product->image ? Storage::url($product->image) : null;
 
@@ -85,15 +91,20 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductUpdateResquest $request, string $id)
-
+    public function update(Request $request, string $id)
     {
         Log::info('RAW:', $request->all());
         Log::info('FILES:', $request->file());
 
         $product = Product::findOrFail($id);
 
-        $validated = $request->validate();
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string|max:255',
+            'price' => 'sometimes|numeric|min:0',
+            'image' => 'sometimes|file|image|mimes:jpg,jpeg,png,gif,bmp|max:2048',
+            'category_id' => 'sometimes|exists:categories,id',
+        ]);
 
         Log::info('VALIDATED:', $validated);
 
