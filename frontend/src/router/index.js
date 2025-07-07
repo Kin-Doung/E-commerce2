@@ -13,6 +13,26 @@ const router = createRouter({
       name: "shop",
       component: () => import("../views/ShopView.vue"),
     },
+    {
+      path: "/about",
+      name: "about",
+      component: () => import("../views/AboutView.vue"),
+    },
+    {
+      path: "/contact",
+      name: "contact",
+      component: () => import("../views/ContactView.vue"),
+    },
+    {
+      path: "/faq",
+      name: "faq",
+      component: () => import("../views/FAQView.vue"),
+    },
+    {
+      path: "/cart",
+      name: "cart",
+      component: () => import("../views/CartView.vue"),
+    },
     // ... other public routes ...
     {
       path: "/admin/login",
@@ -28,6 +48,12 @@ const router = createRouter({
           path: "dashboard",
           name: "AdminDashboard",
           component: () => import("../components/admin/DashboardContent.vue"),
+        },
+        {
+          path: "orders",
+          name: "Orders",
+          component: () =>
+            import("../components/admin/OrdersManagement.vue"),
         },
         {
           path: "inventory",
