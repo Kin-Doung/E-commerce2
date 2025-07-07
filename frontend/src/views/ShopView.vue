@@ -22,6 +22,7 @@
                   :value="category"
                   v-model="selectedCategories"
                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  :aria-label="`Filter by category ${category}`"
                 />
                 <label :for="`category-${category}`" class="text-sm">{{ category }}</label>
               </div>
@@ -39,6 +40,7 @@
                   :value="brand"
                   v-model="selectedBrands"
                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  :aria-label="`Filter by brand ${brand}`"
                 />
                 <label :for="`brand-${brand}`" class="text-sm">{{ brand }}</label>
               </div>
@@ -53,7 +55,14 @@
                 type="range"
                 min="0"
                 max="500"
-                v-model="priceRange[1]"
+                v-model.number="priceRange[0]"
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <input
+                type="range"
+                min="0"
+                max="500"
+                v-model.number="priceRange[1]"
                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               />
               <div class="flex justify-between text-sm text-gray-600 mt-2">
@@ -70,9 +79,10 @@
         <!-- Toolbar -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div class="flex items-center gap-4">
-            <button 
-              @click="showFilters = !showFilters" 
+            <button
+              @click="showFilters = !showFilters"
               class="lg:hidden px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center"
+              aria-label="Toggle filters"
             >
               <FilterIcon class="h-4 w-4 mr-2" />
               Filters
@@ -81,7 +91,10 @@
           </div>
 
           <div class="flex items-center gap-4">
-            <select v-model="sortBy" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select
+              v-model="sortBy"
+              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="featured">Featured</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
@@ -93,12 +106,14 @@
               <button
                 @click="viewMode = 'grid'"
                 :class="`px-3 py-2 ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`"
+                aria-label="Grid view"
               >
                 <GridIcon class="h-4 w-4" />
               </button>
               <button
                 @click="viewMode = 'list'"
                 :class="`px-3 py-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`"
+                aria-label="List view"
               >
                 <ListIcon class="h-4 w-4" />
               </button>
@@ -107,11 +122,19 @@
         </div>
 
         <!-- Products Grid -->
-        <div :class="`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`">
-          <ProductCard v-for="product in sortedProducts" :key="product.id" :product="product" />
+        <div v-if="loading" class="text-center py-12">
+          <p class="text-gray-500 text-lg">Loading products...</p>
         </div>
-
-        <div v-if="sortedProducts.length === 0" class="text-center py-12">
+        <div v-else-if="error" class="text-center py-12">
+          <p class="text-red-500 text-lg">Error: {{ error }}</p>
+          <button
+            @click="fetchData"
+            class="mt-4 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            Retry
+          </button>
+        </div>
+        <div v-else-if="sortedProducts.length === 0" class="text-center py-12">
           <p class="text-gray-500 text-lg">No products found matching your criteria.</p>
           <button
             @click="clearFilters"
@@ -120,62 +143,109 @@
             Clear Filters
           </button>
         </div>
+        <div v-else :class="`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`">
+          <ProductCard v-for="product in sortedProducts" :key="product.id" :product="product" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { FilterIcon, GridIcon, ListIcon } from 'lucide-vue-next'
-import ProductCard from '../components/ProductCard.vue'
-import { useProductStore } from '../stores/products'
+import { ref, computed, watch, onMounted } from 'vue';
+import ProductCard from '@/components/ProductCard.vue';
+import { FilterIcon, GridIcon, ListIcon } from 'lucide-vue-next';
 
-const productStore = useProductStore()
-const showFilters = ref(false)
-const selectedCategories = ref([])
-const selectedBrands = ref([])
-const priceRange = ref([0, 500])
-const sortBy = ref('featured')
-const viewMode = ref('grid')
+const products = ref([]);
+const loading = ref(true);
+const error = ref(null);
 
-const categories = ['Filters', 'Purifiers', 'Dispensers', 'Bottles', 'Accessories']
-const brands = ['AquaPure', 'EcoFlow', 'PureTech', 'FilterFlow', 'SmartH2O']
-
-const filteredProducts = computed(() => {
-  return productStore.products.filter(product => {
-    const categoryMatch = selectedCategories.value.length === 0 || selectedCategories.value.includes(product.category)
-    const brandMatch = selectedBrands.value.length === 0 || selectedBrands.value.includes(product.brand)
-    const priceMatch = product.price >= priceRange.value[0] && product.price <= priceRange.value[1]
-    
-    return categoryMatch && brandMatch && priceMatch
-  })
-})
-
-const sortedProducts = computed(() => {
-  const products = [...filteredProducts.value]
-  
-  switch (sortBy.value) {
-    case 'price-low':
-      return products.sort((a, b) => a.price - b.price)
-    case 'price-high':
-      return products.sort((a, b) => b.price - a.price)
-    case 'rating':
-      return products.sort((a, b) => b.rating - a.rating)
-    case 'name':
-      return products.sort((a, b) => a.name.localeCompare(b.name))
-    default:
-      return products
+const fetchData = async () => {
+  try {
+    const response = await fetch('http://localhost:8000/api/products');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    console.log('API response:', data);
+    products.value = data;
+  } catch (err) {
+    error.value = err.message;
+    console.error('Fetch error:', err);
+  } finally {
+    loading.value = false;
   }
-})
-
-const clearFilters = () => {
-  selectedCategories.value = []
-  selectedBrands.value = []
-  priceRange.value = [0, 500]
-}
+};
 
 onMounted(() => {
-  productStore.fetchProducts()
-})
+  fetchData();
+});
+
+// Filter states
+const selectedCategories = ref([]);
+const selectedBrands = ref([]);
+const priceRange = ref([0, 500]);
+const sortBy = ref('featured');
+const viewMode = ref('grid');
+const showFilters = ref(false);
+
+// Derive unique categories and brands
+const categories = computed(() => {
+  const set = new Set(products.value.map((p) => p.category).filter(Boolean));
+  return Array.from(set);
+});
+
+const brands = computed(() => {
+  const set = new Set(products.value.map((p) => p.brand).filter(Boolean));
+  return Array.from(set);
+});
+
+// Filter products
+const filteredProducts = computed(() => {
+  return products.value.filter((product) => {
+    const inCategory = selectedCategories.value.length === 0 || selectedCategories.value.includes(product.category);
+    const inBrand = selectedBrands.value.length === 0 || selectedBrands.value.includes(product.brand);
+    const price = parseFloat(product.price);
+    const inPrice = price >= priceRange.value[0] && price <= priceRange.value[1];
+    return inCategory && inBrand && inPrice;
+  });
+});
+
+// Sort products
+const sortedProducts = computed(() => {
+  let sorted = [...filteredProducts.value];
+  switch (sortBy.value) {
+    case 'price-low':
+      sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      break;
+    case 'price-high':
+      sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      break;
+    case 'rating':
+      sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      break;
+    case 'name':
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+  }
+  return sorted;
+});
+
+function clearFilters() {
+  selectedCategories.value = [];
+  selectedBrands.value = [];
+  priceRange.value = [0, 500];
+  sortBy.value = 'featured';
+  viewMode.value = 'grid';
+}
+
+watch(priceRange, ([min, max]) => {
+  if (min > max) {
+    priceRange.value = [max, min];
+  }
+});
+
+watch(sortedProducts, (newProducts) => {
+  console.log('Sorted products:', newProducts);
+});
 </script>
