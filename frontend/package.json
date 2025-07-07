@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "ajax": "^0.0.4",
     "axios": "^1.10.0",
     "class-variance-authority": "^0.7.1",
+    "jquery": "^3.7.1",
     "lucide-vue-next": "^0.525.0",
     "pinia": "^3.0.3",
     "vue": "^3.5.17",
