@@ -6,8 +6,9 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Product\ProductUpdateResquest;
+use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Http\Requests\Product\ProductStoreRequest;
+
 
 class ProductController extends Controller
 {
@@ -16,7 +17,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-      
+
         $products = Product::all()->map(function ($product) {
             $product->image_url = $product->image ? Storage::url($product->image) : null;
             return $product;
@@ -31,6 +32,8 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
         try {
+            $validated = $request->validated();
+
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 $path = $request->file('image')->store('products', 'public');
                 $validated['image'] = $path;
@@ -38,9 +41,8 @@ class ProductController extends Controller
                 return response()->json(['message' => 'Invalid image file'], 422);
             }
 
-            $product = Product::create($request->validated());
-
-            $product->image_url = $product->image ? Storage::url($product->image) : null;
+            $product = Product::create($validated);
+            $product->image_url = Storage::url($product->image);
 
             Log::info('Product created successfully', [
                 'product_id' => $product->id,
@@ -67,6 +69,7 @@ class ProductController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -85,15 +88,13 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductUpdateResquest $request, string $id)
-
+    public function update(ProductUpdateRequest $request, string $id)
     {
         Log::info('RAW:', $request->all());
         Log::info('FILES:', $request->file());
 
         $product = Product::findOrFail($id);
-
-        $validated = $request->validate();
+        $validated = $request->validated();
 
         Log::info('VALIDATED:', $validated);
 
@@ -114,13 +115,15 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        $product->image_url = $product->image ? Storage::url($product->image) : null;
+        $updatedProduct = $product->fresh();
+        $updatedProduct->image_url = $updatedProduct->image ? Storage::url($updatedProduct->image) : null;
 
         return response()->json([
             'message' => 'Product updated successfully.',
-            'product' => $product->fresh(),
+            'product' => $updatedProduct,
         ], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

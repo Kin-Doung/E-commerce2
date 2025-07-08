@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Http\Requests\Address\AddressUpdateResquest;
-use App\Http\Requests\Address\AddressStoreRequest;
+use App\Http\Requests\Address\AddressStoreResquest;
 
 class AddressController extends Controller
 {
@@ -21,7 +21,7 @@ class AddressController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddressStoreRequest $request)
+    public function store(AddressStoreResquest $request)
     {
         $address = Address::create($request->validated());
 

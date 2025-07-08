@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Supplier\SupplierStoreResquest;
+use App\Http\Requests\Supplier\SupplierUpdateResquest;
+
 
 class SupplierController extends Controller
 {
@@ -19,13 +22,9 @@ class SupplierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SupplierStoreResquest $request)
     {
-        $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'contact_info' => 'required|string|max:255',
-            'address_id'   => 'required|exists:addresses,id',
-        ]);
+       $validated = $request->validated();
 
         $suppliers = Supplier::create($validated);
 
@@ -45,13 +44,9 @@ class SupplierController extends Controller
         return response()->json($suppliers);
     }
 
-    public function update(Request $request, String $id)
+    public function update(SupplierUpdateResquest $request, String $id)
     {
-        $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'contact_info' => 'required|string|max:255',
-            'address_id'   => 'required|exists:addresses,id',
-        ]);
+        $validated = $request->validated();
 
         $supplier = Supplier::findOrFail($id);
         $supplier->update($validated);

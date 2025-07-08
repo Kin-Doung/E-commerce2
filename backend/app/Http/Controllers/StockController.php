@@ -6,7 +6,7 @@ use App\Models\Stock;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Stock\StockUpdateResquest;
-use App\Http\Requests\Stock\StockStoreRequest;
+use App\Http\Requests\Stock\StockStoreResquest;
 
 class StockController extends Controller
 {
@@ -22,7 +22,7 @@ class StockController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StockStoreRequest $request)
+    public function store(StockStoreResquest $request)
     {
         $validated = $request->validated();
         $stock = Stock::create($validated);
