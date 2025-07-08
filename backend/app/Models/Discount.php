@@ -17,4 +17,5 @@ class Discount extends Model
     {
         return Carbon::parse($value)->format('d-F-Y');
     }
+    
 }
