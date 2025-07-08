@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
 
 class OrderController extends Controller
 {
@@ -12,14 +13,21 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with(['users', 'orderItem', 'payments'])->get();
-
+       $orders = Order::with(['user', 'orderItem', 'payments'])->get();
         $orders->each(function ($order) {
-            $order->calculated_total = $order->orderItem->sum('total');
+            // Calculate the real total
+            $realTotal = $order->orderItem->sum('total');
+
+            // If you want to always show only the real total:
+            $order->total = $realTotal;
+
+            // Or if you want to show both:
+            $order->calculated_total = $realTotal;
         });
 
         return response()->json($orders);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -34,7 +42,7 @@ class OrderController extends Controller
         $order = Order::create([
             'user_id' => $validated['user_id'],
             'address_id' => $validated['address_id'] ?? null,
-            'total' => 0
+            'total' => 0,
         ]);
 
         return response()->json([
@@ -48,7 +56,7 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::with(['user', 'orderItems'])->findOrFail($id);
+        $order = Order::with(['users', 'orderItems'])->findOrFail($id);
         $order->calculated_total = $order->orderItems->sum('total');
 
         return response()->json($order);
