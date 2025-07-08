@@ -4,11 +4,7 @@ namespace App\Http\Requests\Address;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-<<<<<<< HEAD:backend/app/Http/Requests/Address/AddressStoreResquest.php
-class AddressStoreResquest extends FormRequest
-=======
 class AddressStoreRequest extends FormRequest
->>>>>>> fc7ea194b57214bc1ae82cdf8038f95f9fae9ddb:backend/app/Http/Requests/Address/AddressStoreRequest.php
 {
     /**
      * Determine if the user is authorized to make this request.

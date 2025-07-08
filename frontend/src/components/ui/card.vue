@@ -92,4 +92,3 @@ export const CardFooter = defineComponent({
   }
 })
 </script>
-

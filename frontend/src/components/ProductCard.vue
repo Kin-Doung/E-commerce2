@@ -1,24 +1,39 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden group">
+  <div
+    class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden group"
+  >
     <div class="relative">
       <router-link :to="`/product/${product.id}`">
         <img
-          :src="product.image"
+          :src="fullImageUrl"
           :alt="product.name"
           class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </router-link>
-      <div v-if="product.originalPrice" class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs">
-        Save ${{ (product.originalPrice - product.price).toFixed(2) }}
+      <div
+        v-if="product.originalPrice"
+        class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs"
+      >
+        Save ${{
+          (
+            parseFloat(product.originalPrice) - parseFloat(product.price)
+          ).toFixed(2)
+        }}
       </div>
     </div>
     <div class="p-6">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-sm text-blue-600 font-medium">{{ product.brand }}</span>
-        <span class="text-sm text-gray-500">{{ product.category }}</span>
+        <span class="text-sm text-blue-600 font-medium">{{
+          product.brand || "Unknown Brand"
+        }}</span>
+        <span class="text-sm text-gray-500">{{
+          product.category || "Uncategorized"
+        }}</span>
       </div>
       <router-link :to="`/product/${product.id}`">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+        <h3
+          class="text-lg font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors"
+        >
           {{ product.name }}
         </h3>
       </router-link>
@@ -27,18 +42,30 @@
           <StarIcon
             v-for="i in 5"
             :key="i"
-            :class="`h-4 w-4 ${i <= Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`"
+            :class="`h-4 w-4 ${
+              i <= Math.floor(product.rating || 0)
+                ? 'text-yellow-400 fill-current'
+                : 'text-gray-300'
+            }`"
           />
         </div>
         <span class="text-sm text-gray-600 ml-2">
-          {{ product.rating }} ({{ product.reviews }} reviews)
+          {{ (product.rating || 0).toFixed(1) }} ({{
+            product.reviews || 0
+          }}
+          reviews)
         </span>
       </div>
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <span class="text-2xl font-bold text-blue-900">${{ product.price.toFixed(2) }}</span>
-          <span v-if="product.originalPrice" class="text-lg text-gray-500 line-through">
-            ${{ product.originalPrice.toFixed(2) }}
+          <span class="text-2xl font-bold text-blue-900"
+            >${{ parseFloat(product.price).toFixed(2) }}</span
+          >
+          <span
+            v-if="product.originalPrice"
+            class="text-lg text-gray-500 line-through"
+          >
+            ${{ parseFloat(product.originalPrice).toFixed(2) }}
           </span>
         </div>
         <button
@@ -54,8 +81,9 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { StarIcon, ShoppingCartIcon } from 'lucide-vue-next'
-import { useCartStore } from '../stores/cart'
+import { useCartStore } from "../stores/cart";
 
 const props = defineProps({
   product: {
@@ -64,15 +92,22 @@ const props = defineProps({
   }
 })
 
-const cartStore = useCartStore()
+const cartStore = useCartStore();
+
+const fullImageUrl = computed(() => {
+  if (props.product.image_url.startsWith("http")) {
+    return props.product.image_url;
+  }
+  return `http://localhost:8000${props.product.image_url}`;
+});
 
 const addToCart = () => {
   cartStore.addItem({
     id: props.product.id,
     name: props.product.name,
-    price: props.product.price,
-    image: props.product.image,
-    quantity: 1
-  })
-}
+    price: parseFloat(props.product.price),
+    image: fullImageUrl.value,
+    quantity: 1,
+  });
+};
 </script>

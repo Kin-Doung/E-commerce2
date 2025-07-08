@@ -223,31 +223,4 @@ const handleSearch = () => {
     router.push('/shop')
   }
 }
-
-const logout = () => {
-  authStore.logout()
-  showUserMenu.value = false
-  router.push('/')
-}
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString()
-}
-
-const handleClickOutside = (event) => {
-  if (!event.target.closest('.relative')) {
-    showNotifications.value = false
-    showUserMenu.value = false
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
-
-// productStore.fetchCategories()
 </script>
