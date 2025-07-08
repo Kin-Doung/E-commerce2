@@ -5,9 +5,8 @@
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-2 mb-4">
           <DropletIcon class="h-10 w-10 text-blue-600" />
-          <span class="text-3xl font-bold text-blue-900">AquaPure</span>
+          <span class="text-3xl font-bold text-blue-900">AquaPure Create Account</span>
         </div>
-        <h1 class="text-2xl font-bold text-blue-900">Create Account</h1>
         <p class="text-gray-600">Join us for clean, healthy hydration</p>
       </div>
 
