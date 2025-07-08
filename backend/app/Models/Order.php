@@ -15,7 +15,7 @@ class Order extends Model
         'address_id',
     ];
 
-    public function users(){
+    public function user(){
         return $this->belongsTo(User::class);
     }
 
@@ -30,8 +30,12 @@ class Order extends Model
     public function orderItem(){
         return $this->hasMany(Order_Item::class);
     }
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
+    public function getCreatedAtAttribute($value) {
+        return date('d-m-Y', strtotime($value));
+    }
+
+    // create attribute to clean date formate
+    public function getUpdatedAtAttribute($value) {
+        return date('F d, Y', strtotime($value));
+    }
 }

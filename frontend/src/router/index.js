@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: "/login",
       name: "admin-login",
       component: () => import("../views/AdminLoginView.vue"),
+    },
+    {
+      path: "/register",
+      name: "register",
+      component: () => import("../views/RegisterView.vue"),
     },
     {
       path: "/admin",
@@ -96,6 +102,27 @@ const router = createRouter({
       component: () => import("../views/AdminDashboardView.vue")
     }
   ]
+});
+
+// Navigation guard to protect admin routes
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (to.path.startsWith('/admin')) {
+    if (!authStore.isAuthenticated) {
+      // Not logged in, redirect to login
+      next({ name: 'admin-login' });
+    } else if (!authStore.isAdmin) {
+      // Logged in but not admin, redirect to home or public page
+      next({ name: 'home' });
+    } else {
+      // Admin authenticated, allow access
+      next();
+    }
+  } else {
+    // Public routes, allow access
+    next();
+  }
 });
 
 export default router;

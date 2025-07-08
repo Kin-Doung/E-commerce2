@@ -16,8 +16,4 @@ class Notification extends Model
     public function users(){
         return $this->belongsTo(User::class);
     }
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
 }

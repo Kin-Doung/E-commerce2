@@ -11,7 +11,8 @@
           class="cursor-pointer flex items-center px-6 py-3 text-sm font-medium"
           :class="{
             'bg-blue-50 text-blue-600': $route.name === item.id,
-            'text-gray-600 hover:bg-gray-50 hover:text-gray-900': $route.name !== item.id
+            'text-gray-600 hover:bg-gray-50 hover:text-gray-900':
+              $route.name !== item.id,
           }"
         >
           <router-link :to="item.path" class="flex items-center w-full">
@@ -25,11 +26,25 @@
 </template>
 
 <script setup>
-import { HomeIcon, BarChart2Icon, UsersIcon, PackageIcon, SettingsIcon, ListIcon } from 'lucide-vue-next'
+import {
+  HomeIcon,
+  BarChart2Icon,
+  UsersIcon,
+  PackageIcon,
+  SettingsIcon,
+  ListIcon,
+  ShoppingCartIcon,
+  TruckIcon,
+  CreditCardIcon,
+  BellIcon,
+  UserIcon,
+  ShieldIcon,
+  HelpCircleIcon,
+} from "lucide-vue-next";
 
 defineProps({
-  items: Array
-})
+  items: Array,
+});
 
 const iconComponent = (iconName) => {
   const icons = {
@@ -38,8 +53,15 @@ const iconComponent = (iconName) => {
     UsersIcon,
     PackageIcon,
     SettingsIcon,
-    ListIcon // Added for Categories
-  }
-  return icons[iconName] || HomeIcon
-}
+    ListIcon,
+    ShoppingCartIcon,
+    TruckIcon,
+    CreditCardIcon,
+    BellIcon,
+    UserIcon,
+    ShieldIcon,
+    HelpCircleIcon,
+  };
+  return icons[iconName] || HomeIcon;
+};
 </script>

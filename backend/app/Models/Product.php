@@ -26,8 +26,4 @@ class Product extends Model
     {
         return $this->hasMany(Inventory::class);
     }
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
 }

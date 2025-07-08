@@ -13,8 +13,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with(['users', 'orderItem', 'payments'])->get();
-
+       $orders = Order::with(['user', 'orderItem', 'payments'])->get();
         $orders->each(function ($order) {
             // Calculate the real total
             $realTotal = $order->orderItem->sum('total');
@@ -57,7 +56,7 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::with(['user', 'orderItems'])->findOrFail($id);
+        $order = Order::with(['users', 'orderItems'])->findOrFail($id);
         $order->calculated_total = $order->orderItems->sum('total');
 
         return response()->json($order);

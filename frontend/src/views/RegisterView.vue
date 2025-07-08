@@ -170,33 +170,31 @@ const handleSubmit = async () => {
 
   try {
     // Mock registration - replace with actual API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await authStore.register({
+        name: `${formData.value.firstName} ${formData.value.lastName}`,
+        email: formData.value.email,
+        password: formData.value.password,
+        password_confirmation: formData.value.confirmPassword,
+        role: 'user'
+      })
 
-    const userData = {
-      id: Date.now(),
-      email: formData.value.email,
-      name: `${formData.value.firstName} ${formData.value.lastName}`,
-      role: 'user'
+      if (!response.success) {
+        throw new Error(response.error || 'Registration failed')
+      }
+
+      // Add success notification
+      notificationStore.addNotification({
+        id: Date.now(),
+        message: `Welcome to AquaPure, ${authStore.user.name}!`,
+        sent_date: new Date().toISOString(),
+        is_read: false
+      })
+
+      router.push('/')
+    } catch (err) {
+      error.value = err.message
     }
-
-    // Set user data in auth store
-    authStore.user = userData
-    authStore.token = 'mock_token_' + Date.now()
-    authStore.isAuthenticated = true
-
-    // Store in localStorage
-    localStorage.setItem('auth_token', authStore.token)
-    localStorage.setItem('user', JSON.stringify(userData))
-
-    // Add success notification
-    notificationStore.addNotification({
-      id: Date.now(),
-      message: `Welcome to AquaPure, ${userData.name}!`,
-      sent_date: new Date().toISOString(),
-      is_read: false
-    })
-
-    router.push('/')
 
   } catch (err) {
     error.value = 'Registration failed. Please try again.'

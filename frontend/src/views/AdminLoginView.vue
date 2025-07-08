@@ -152,50 +152,32 @@ const handleSubmit = async () => {
 
   try {
     // Mock authentication - replace with actual API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await authStore.login({
+        email: formData.value.email,
+        password: formData.value.password
+      })
 
-    // Mock user data based on email
-    let userData = null
-    if (formData.value.email === 'admin@aquapure.com' && formData.value.password === 'admin123') {
-      userData = {
-        id: 1,
-        email: 'admin@aquapure.com',
-        role: 'admin',
-        name: 'Admin User'
+      if (!response.success) {
+        throw new Error(response.error || 'Invalid credentials')
       }
-    } else if (formData.value.email === 'user@aquapure.com' && formData.value.password === 'user123') {
-      userData = {
-        id: 2,
-        email: 'user@aquapure.com',
-        role: 'user',
-        name: 'Regular User'
+
+      // Add success notification
+      notificationStore.addNotification({
+        id: Date.now(),
+        message: `Welcome back, ${authStore.user.name}!`,
+        sent_date: new Date().toISOString(),
+        is_read: false
+      })
+
+      // Redirect based on role
+      if (authStore.isAdmin) {
+        router.push('/admin/dashboard')
+      } else {
+        router.push('/')
       }
-    } else {
-      throw new Error('Invalid credentials')
-    }
-
-    // Set user data in auth store
-    authStore.user = userData
-    authStore.token = 'mock_token_' + Date.now()
-    authStore.isAuthenticated = true
-
-    // Store in localStorage
-    localStorage.setItem('auth_token', authStore.token)
-    localStorage.setItem('user', JSON.stringify(userData))
-
-    // Add success notification
-    notificationStore.addNotification({
-      id: Date.now(),
-      message: `Welcome back, ${userData.name}!`,
-      sent_date: new Date().toISOString(),
-      is_read: false
-    })
-
-    // Redirect based on role
-    if (userData.role === 'admin') {
-      router.push('/admin/dashboard')
-    } else {
-      router.push('/')
+    } catch (err) {
+      error.value = err.message
     }
 
   } catch (err) {
