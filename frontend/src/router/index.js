@@ -50,6 +50,12 @@ const router = createRouter({
           component: () => import("../components/admin/DashboardContent.vue"),
         },
         {
+          path: "stocks",
+          name: "Stocks",
+          component: () =>
+            import("../components/admin/StocksManagement.vue"),
+        },
+        {
           path: "orders",
           name: "Orders",
           component: () =>

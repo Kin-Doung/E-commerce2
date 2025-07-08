@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="bg-white shadow rounded-lg p-6">
     <h2 class="text-lg font-medium text-gray-900">Order #{{ orderId }}</h2>

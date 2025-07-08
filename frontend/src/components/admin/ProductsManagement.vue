@@ -36,6 +36,16 @@
         </div>
       </div>
 
+      <!-- Debug Information -->
+      <div v-if="error" class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+        <p class="font-medium">Error: {{ error }}</p>
+      </div>
+
+      <!-- Loading Categories -->
+      <div v-if="loadingCategories" class="mb-6 p-4 bg-blue-100 text-blue-700 rounded-lg">
+        <p class="font-medium">Loading categories...</p>
+      </div>
+
       <!-- Add Product Form -->
       <div v-if="showAddForm" class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
         <div class="flex items-center mb-6">
@@ -73,7 +83,6 @@
               </div>
             </div>
           </div>
-
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
@@ -84,7 +93,6 @@
               required
             ></textarea>
           </div>
-
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
@@ -106,15 +114,16 @@
                 required
               >
                 <option value="">Select Category</option>
-                <option value="1">Electronics</option>
-                <option value="2">Clothing</option>
-                <option value="3">Books</option>
-                <option value="4">Home & Garden</option>
-                <option value="5">Sports</option>
+                <option 
+                  v-for="category in categories" 
+                  :key="category.id" 
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
               </select>
             </div>
           </div>
-
           <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
             <button
               type="button"
@@ -133,15 +142,6 @@
             </button>
           </div>
         </form>
-        
-        <div v-if="error" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div class="flex items-center">
-            <svg class="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <p class="text-red-800 font-medium">{{ error }}</p>
-          </div>
-        </div>
       </div>
 
       <!-- Search and Filter Section -->
@@ -160,22 +160,24 @@
               />
             </div>
             <select 
-              v-model="categoryFilter" 
+              v-model="categoryFilter"
               class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Categories</option>
-              <option value="1">Electronics</option>
-              <option value="2">Clothing</option>
-              <option value="3">Books</option>
-              <option value="4">Home & Garden</option>
-              <option value="5">Sports</option>
+              <option 
+                v-for="category in categories" 
+                :key="category.id" 
+                :value="category.id"
+              >
+                {{ category.name }}
+              </option>
             </select>
           </div>
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
               <span class="text-sm text-gray-600">Show:</span>
               <select 
-                v-model="itemsPerPage" 
+                v-model="itemsPerPage"
                 class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="10">10</option>
@@ -185,7 +187,7 @@
               </select>
             </div>
             <button 
-              @click="fetchProducts" 
+              @click="fetchProducts"
               class="p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
               :disabled="loading"
             >
@@ -289,7 +291,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr 
-                v-for="(product, index) in paginatedProducts" 
+                v-for="(product, index) in paginatedProducts"
                 :key="product.id || index"
                 class="hover:bg-gray-50 transition-colors duration-150"
                 :class="{ 'bg-blue-50': selectedProducts.includes(product.id || index) }"
@@ -466,7 +468,7 @@
               </button>
             </div>
           </div>
-
+          
           <form @submit.prevent="saveProduct" class="p-6 space-y-6">
             <!-- Current Image Preview -->
             <div v-if="editedProduct.image_url || editedProduct.image" class="text-center">
@@ -478,7 +480,7 @@
               />
               <p class="text-sm text-gray-500 mt-2">Current Image</p>
             </div>
-
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
@@ -504,7 +506,7 @@
                 </div>
               </div>
             </div>
-
+            
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
               <textarea
@@ -515,7 +517,7 @@
                 required
               ></textarea>
             </div>
-
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Update Image (Optional)</label>
@@ -534,15 +536,17 @@
                   required
                 >
                   <option value="">Select Category</option>
-                  <option value="1">Electronics</option>
-                  <option value="2">Clothing</option>
-                  <option value="3">Books</option>
-                  <option value="4">Home & Garden</option>
-                  <option value="5">Sports</option>
+                  <option 
+                    v-for="category in categories" 
+                    :key="category.id" 
+                    :value="category.id"
+                  >
+                    {{ category.name }}
+                  </option>
                 </select>
               </div>
             </div>
-
+            
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
               <button
                 type="button"
@@ -561,7 +565,7 @@
               </button>
             </div>
           </form>
-
+          
           <div v-if="error" class="mx-6 mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div class="flex items-center">
               <svg class="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,7 +593,6 @@
               </button>
             </div>
           </div>
-
           <div class="p-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
@@ -639,8 +642,13 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
+// API Configuration
+const BASE_URL = 'http://127.0.0.1:8000/api/products'
+const CATEGORIES_URL = 'http://127.0.0.1:8000/api/categories'
+
 // Reactive state
 const products = ref([])
+const categories = ref([])
 const searchQuery = ref('')
 const categoryFilter = ref('')
 const newProduct = ref({
@@ -664,6 +672,7 @@ const isEditing = ref(false)
 const isShowing = ref(false)
 const showAddForm = ref(false)
 const loading = ref(false)
+const loadingCategories = ref(false)
 const error = ref(null)
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -676,12 +685,10 @@ const sortField = ref('name')
 const sortDirection = ref('asc')
 const activeMenuIndex = ref(null)
 
-const BASE_URL = 'http://127.0.0.1:8000/api/products'
-
 // Computed properties
 const filteredProducts = computed(() => {
   let filtered = products.value
-
+  
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(product => 
@@ -689,13 +696,13 @@ const filteredProducts = computed(() => {
       product.description?.toLowerCase().includes(query)
     )
   }
-
+  
   if (categoryFilter.value) {
     filtered = filtered.filter(product => 
-      product.category_id?.toString() === categoryFilter.value
+      product.category_id?.toString() === categoryFilter.value.toString()
     )
   }
-
+  
   // Apply sorting
   filtered.sort((a, b) => {
     let aVal = a[sortField.value]
@@ -712,7 +719,7 @@ const filteredProducts = computed(() => {
       return aVal < bVal ? 1 : -1
     }
   })
-
+  
   return filtered
 })
 
@@ -752,16 +759,70 @@ const visiblePages = computed(() => {
 })
 
 // Methods
+const fetchCategories = async () => {
+  try {
+    loadingCategories.value = true
+    console.log('Fetching categories from:', CATEGORIES_URL)
+    
+    const response = await fetch(CATEGORIES_URL, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    console.log('Categories response status:', response.status)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    console.log('Fetched categories:', data)
+    
+    // Handle different response formats
+    categories.value = Array.isArray(data) ? data : (data.data || [])
+    
+  } catch (err) {
+    console.error('Fetch categories error:', err)
+    error.value = `Failed to fetch categories: ${err.message}`
+    // Fallback to empty array if categories fail to load
+    categories.value = []
+  } finally {
+    loadingCategories.value = false
+  }
+}
+
 const fetchProducts = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await fetch(BASE_URL)
-    if (!response.ok) throw new Error('Failed to fetch products')
+    
+    console.log('Fetching products from:', BASE_URL)
+    
+    const response = await fetch(BASE_URL, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    console.log('Response status:', response.status)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
     const data = await response.json()
-    products.value = Array.isArray(data) ? data : [data]
+    console.log('Fetched data:', data)
+    
+    products.value = Array.isArray(data) ? data : (data.data || [])
+    
   } catch (err) {
-    error.value = err.message
+    console.error('Fetch error:', err)
+    error.value = `Failed to fetch products: ${err.message}`
   } finally {
     loading.value = false
   }
@@ -794,19 +855,31 @@ const addProduct = async () => {
     formData.append('image', newProduct.value.image)
     formData.append('category_id', newProduct.value.category_id)
     
+    console.log('Adding product with data:', Object.fromEntries(formData))
+    
     const response = await fetch(BASE_URL, {
       method: 'POST',
       body: formData
     })
     
-    if (!response.ok) throw new Error('Failed to add product')
+    console.log('Add response status:', response.status)
+    
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error('Add error response:', errorData)
+      throw new Error(`Failed to add product: ${response.status}`)
+    }
+    
     const data = await response.json()
+    console.log('Added product:', data)
     
     products.value.push(data)
     showAddForm.value = false
     resetNewProduct()
     showToastMessage('Product added successfully!')
+    
   } catch (err) {
+    console.error('Add product error:', err)
     error.value = err.message
   } finally {
     loading.value = false
@@ -830,9 +903,17 @@ const resetNewProduct = () => {
 }
 
 const editProduct = (product) => {
+  console.log('Editing product:', product)
+  
   isEditing.value = true
-  editedProduct.value = { ...product, image: null }
+  editedProduct.value = { 
+    ...product, 
+    image: null // Reset file input
+  }
   activeMenuIndex.value = null
+  error.value = null
+  
+  console.log('Edit form data:', editedProduct.value)
 }
 
 const saveProduct = async () => {
@@ -840,27 +921,53 @@ const saveProduct = async () => {
     loading.value = true
     error.value = null
     
+    console.log('Saving product:', editedProduct.value)
+    
     const formData = new FormData()
     formData.append('name', editedProduct.value.name)
     formData.append('price', editedProduct.value.price)
     formData.append('description', editedProduct.value.description)
-    if (editedProduct.value.image) formData.append('image', editedProduct.value.image)
     formData.append('category_id', editedProduct.value.category_id)
     
+    // Only append image if a new one was selected
+    if (editedProduct.value.image) {
+      formData.append('image', editedProduct.value.image)
+    }
+    
+    // Add _method for Laravel to handle PUT request with FormData
+    formData.append('_method', 'PUT')
+    
+    console.log('Sending update request for product ID:', editedProduct.value.id)
+    console.log('FormData contents:', Object.fromEntries(formData))
+    
     const response = await fetch(`${BASE_URL}/${editedProduct.value.id}`, {
-      method: 'PUT',
+      method: 'POST', // Use POST with _method=PUT for FormData
       body: formData
     })
     
-    if (!response.ok) throw new Error('Failed to update product')
-    const data = await response.json()
+    console.log('Update response status:', response.status)
     
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error('Update error response:', errorData)
+      throw new Error(`Failed to update product: ${response.status} - ${errorData}`)
+    }
+    
+    const data = await response.json()
+    console.log('Updated product data:', data)
+    
+    // Update the product in the local array
     const index = products.value.findIndex(p => p.id === data.id)
-    if (index !== -1) products.value[index] = data
+    if (index !== -1) {
+      products.value[index] = data
+      console.log('Product updated in local array at index:', index)
+    }
     
     isEditing.value = false
     showToastMessage('Product updated successfully!')
+    
   } catch (err) {
+    console.error('Save product error:', err)
     error.value = err.message
   } finally {
     loading.value = false
@@ -885,17 +992,32 @@ const deleteProduct = async (id) => {
   if (confirm('Are you sure you want to delete this product?')) {
     try {
       loading.value = true
+      
+      console.log('Deleting product ID:', id)
+      
       const response = await fetch(`${BASE_URL}/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       })
       
-      if (!response.ok) throw new Error('Failed to delete product')
+      console.log('Delete response status:', response.status)
+      
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error('Delete error response:', errorData)
+        throw new Error(`Failed to delete product: ${response.status}`)
+      }
       
       products.value = products.value.filter(p => p.id !== id)
       selectedProducts.value = selectedProducts.value.filter(selectedId => selectedId !== id)
       showToastMessage('Product deleted successfully!')
       activeMenuIndex.value = null
+      
     } catch (err) {
+      console.error('Delete product error:', err)
       error.value = err.message
     } finally {
       loading.value = false
@@ -920,14 +1042,10 @@ const handleImageError = (event) => {
 }
 
 const getCategoryName = (categoryId) => {
-  const categories = {
-    '1': 'Electronics',
-    '2': 'Clothing',
-    '3': 'Books',
-    '4': 'Home & Garden',
-    '5': 'Sports'
-  }
-  return categories[categoryId?.toString()] || 'Unknown'
+  if (!categoryId || !categories.value.length) return 'Unknown'
+  
+  const category = categories.value.find(cat => cat.id.toString() === categoryId.toString())
+  return category ? category.name : 'Unknown'
 }
 
 const showToastMessage = (message) => {
@@ -993,8 +1111,10 @@ const handleClickOutside = (event) => {
 }
 
 // Lifecycle
-onMounted(() => {
-  fetchProducts()
+onMounted(async () => {
+  // Fetch categories first, then products
+  await fetchCategories()
+  await fetchProducts()
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -1006,7 +1126,7 @@ onUnmounted(() => {
 <style scoped>
 /* Custom table styles */
 .table-hover tbody tr:hover {
-  background-color: #f9fafb;
+  background-color: #f9fafb;    
 }
 
 /* Custom scrollbar */
