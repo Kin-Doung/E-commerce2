@@ -23,9 +23,4 @@ class Address extends Model
     public function suppliers(){
         return $this->hasMany(Supplier::class);
     }
-
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
 }

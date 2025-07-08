@@ -16,8 +16,4 @@ class Supplier extends Model
     public function suppliers(){
         return $this->belongsTo(Address::class);
     }
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
 }

@@ -71,23 +71,23 @@ const sidebarItems = ref([
   },
   {
     id: "orders",
-    name: "orders",
-    icon: "Package",
+    name: "Orders", 
+    icon: "ShoppingCartIcon",
     path: "/admin/orders",
   },
   {
     id: "Inventory",
     name: "Inventory",
-    icon: "Package",
+    icon: "TruckIcon",
     path: "/admin/inventory",
   },
 
-  {
-    id: "Analytics",
-    name: "Analytics",
-    icon: "BarChart2Icon",
-    path: "/admin/analytics",
-  },
+  // {
+  //   id: "Analytics",
+  //   name: "Analytics",
+  //   icon: "BarChart2Icon",
+  //   path: "/admin/analytics",
+  // },
   {
     id: "Customers",
     name: "Customers",
