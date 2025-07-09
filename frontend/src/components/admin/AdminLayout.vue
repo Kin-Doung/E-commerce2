@@ -157,6 +157,3 @@ const sidebarItems = ref([
 ]);
 </script>
 
-<style scoped>
-/* Add any custom styles here if needed */
-</style>

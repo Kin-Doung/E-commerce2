@@ -113,5 +113,7 @@ const sidebarItems = ref([
     icon: "SettingsIcon",
     path: "/admin/settings",
   },
+
+
 ]);
 </script>

@@ -94,6 +94,22 @@ const router = createRouter({
           name: "Settings",
           component: () => import("../components/admin/SettingsPanel.vue"),
         },
+        {
+          path: "notifications",
+          name: "notifications",
+          component: () => import("../components/admin/NotificationManagement.vue"),
+        },
+        {
+          path: "security",
+          name: "security",
+          component: () => import("../components/admin/SecurityManagement.vue"),
+        },
+        {
+          path: "help",
+          name: "help",
+          component: () => import("../components/admin/Help&SupportManagement.vue"),
+        },
+
       ],
     },
   ],

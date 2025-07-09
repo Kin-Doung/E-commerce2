@@ -375,7 +375,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+aside {
+  position: fixed;
+  top: 0;
+}
 nav::-webkit-scrollbar {
   width: 4px;
 }
