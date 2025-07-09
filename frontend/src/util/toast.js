@@ -15,6 +15,18 @@ export function getToastColor(type) {
   }
 }
 export function addToast(type, title, message, toasts) {
+  // Ensure message is string
+  if (typeof message !== 'string') {
+    try {
+      message = JSON.stringify(message)
+    } catch {
+      message = String(message)
+    }
+  }
+  // Skip adding toast if message is empty or still an object-like string
+  if (!message || message === '[object Object]') {
+    return
+  }
   toasts.push({
     id: Date.now(),
     type,
