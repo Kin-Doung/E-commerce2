@@ -2,17 +2,23 @@
   <div id="app">
     <Navbar />
     <router-view />
-    <Footer />
+    <Footer v-if="showFooter" />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
 import { useCartStore } from './stores/cart'
 
 const cartStore = useCartStore()
+const route = useRoute()
+
+const showFooter = computed(() => {
+  return route.name !== 'admin-login' && route.name !== 'register' && !route.path.startsWith('/admin')
+})
 
 onMounted(() => {
   // Initialize cart from localStorage
