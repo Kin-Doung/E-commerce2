@@ -56,6 +56,12 @@ const router = createRouter({
           component: () => import("../components/admin/DashboardContent.vue"),
         },
         {
+          path: "stocks",
+          name: "Stocks",
+          component: () =>
+            import("../components/admin/StocksManagement.vue"),
+        },
+        {
           path: "orders",
           name: "Orders",
           component: () =>
@@ -94,13 +100,25 @@ const router = createRouter({
           name: "Settings",
           component: () => import("../components/admin/SettingsPanel.vue"),
         },
+        {
+          path: "notifications",
+          name: "notifications",
+          component: () => import("../components/admin/NotificationManagement.vue"),
+        },
+        {
+          path: "security",
+          name: "security",
+          component: () => import("../components/admin/SecurityManagement.vue"),
+        },
+        {
+          path: "help",
+          name: "help",
+          component: () => import("../components/admin/Help&SupportManagement.vue"),
+        },
+
       ],
     },
-    {
-      path: "/admin/dashboard",
-      name: "AdminDashboard",
-      component: () => import("../views/AdminDashboardView.vue")
-    }
+
   ]
 });
 

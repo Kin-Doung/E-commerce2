@@ -1,28 +1,42 @@
 <template>
   <div id="app">
-    <Navbar />
+    <!-- Only show Navbar if user is not admin -->
+    <Navbar v-if="!isAdmin" />
+    
     <router-view />
-    <Footer v-if="showFooter" />
+    
+    <!-- Only show Footer if user is not admin -->
+    <Footer v-if="!isAdmin" />
   </div>
 </template>
 
 <script setup>
 import { onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
 import { useCartStore } from './stores/cart'
+import { useAuthStore } from './stores/auth' // Assuming you have an auth store
 
 const cartStore = useCartStore()
-const route = useRoute()
+const authStore = useAuthStore() // Get auth store
 
-const showFooter = computed(() => {
-  return route.name !== 'admin-login' && route.name !== 'register' && !route.path.startsWith('/admin')
+// Computed property to check if user is admin
+const isAdmin = computed(() => {
+  return authStore.user?.role === 'admin' || authStore.isAdmin
 })
+
+// Alternative: You can also check based on route
+// const route = useRoute()
+// const isAdmin = computed(() => {
+//   return route.path.startsWith('/admin')
+// })
 
 onMounted(() => {
   // Initialize cart from localStorage
   cartStore.loadCart()
+  
+  // Initialize auth state
+  authStore.checkAuth() // Assuming you have this method
 })
 </script>
 

@@ -70,6 +70,12 @@ const sidebarItems = ref([
     path: "/admin/dashboard",
   },
   {
+    id: "stocks",
+    name: "Stocks", 
+    icon: "ArchiveIcon",
+    path: "/admin/stocks",
+  },
+  {
     id: "orders",
     name: "Orders", 
     icon: "ShoppingCartIcon",
@@ -82,12 +88,7 @@ const sidebarItems = ref([
     path: "/admin/inventory",
   },
 
-  // {
-  //   id: "Analytics",
-  //   name: "Analytics",
-  //   icon: "BarChart2Icon",
-  //   path: "/admin/analytics",
-  // },
+
   {
     id: "Customers",
     name: "Customers",
@@ -112,5 +113,7 @@ const sidebarItems = ref([
     icon: "SettingsIcon",
     path: "/admin/settings",
   },
+
+
 ]);
 </script>
