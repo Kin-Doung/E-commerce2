@@ -5,9 +5,8 @@
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-2 mb-4">
           <DropletIcon class="h-10 w-10 text-blue-600" />
-          <span class="text-3xl font-bold text-blue-900">AquaPure</span>
+          <span class="text-3xl font-bold text-blue-900">AquaPure Create Account</span>
         </div>
-        <h1 class="text-2xl font-bold text-blue-900">Create Account</h1>
         <p class="text-gray-600">Join us for clean, healthy hydration</p>
       </div>
 
@@ -170,33 +169,31 @@ const handleSubmit = async () => {
 
   try {
     // Mock registration - replace with actual API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await authStore.register({
+        name: `${formData.value.firstName} ${formData.value.lastName}`,
+        email: formData.value.email,
+        password: formData.value.password,
+        password_confirmation: formData.value.confirmPassword,
+        role: 'user'
+      })
 
-    const userData = {
-      id: Date.now(),
-      email: formData.value.email,
-      name: `${formData.value.firstName} ${formData.value.lastName}`,
-      role: 'user'
+      if (!response.success) {
+        throw new Error(response.error || 'Registration failed')
+      }
+
+      // Add success notification
+      notificationStore.addNotification({
+        id: Date.now(),
+        message: `Welcome to AquaPure, ${authStore.user.name}!`,
+        sent_date: new Date().toISOString(),
+        is_read: false
+      })
+
+      router.push('/')
+    } catch (err) {
+      error.value = err.message
     }
-
-    // Set user data in auth store
-    authStore.user = userData
-    authStore.token = 'mock_token_' + Date.now()
-    authStore.isAuthenticated = true
-
-    // Store in localStorage
-    localStorage.setItem('auth_token', authStore.token)
-    localStorage.setItem('user', JSON.stringify(userData))
-
-    // Add success notification
-    notificationStore.addNotification({
-      id: Date.now(),
-      message: `Welcome to AquaPure, ${userData.name}!`,
-      sent_date: new Date().toISOString(),
-      is_read: false
-    })
-
-    router.push('/')
 
   } catch (err) {
     error.value = 'Registration failed. Please try again.'

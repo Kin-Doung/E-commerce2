@@ -5,9 +5,8 @@
       <div class="text-center mb-8">
         <div class="flex items-center justify-center space-x-2 mb-4">
           <DropletIcon class="h-10 w-10 text-blue-600" />
-          <span class="text-3xl font-bold text-blue-900">AquaPure</span>
+          <span class="text-3xl font-bold text-blue-900">AquaPure Welcome Back</span>
         </div>
-        <h1 class="text-2xl font-bold text-blue-900">Welcome Back</h1>
         <p class="text-gray-600">Sign in to your account</p>
       </div>
 
@@ -80,37 +79,6 @@
           </button>
         </form>
 
-        <!-- Demo Credentials -->
-        <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <h3 class="text-sm font-medium text-blue-900 mb-2">Demo Credentials:</h3>
-          <div class="space-y-2">
-            <div class="text-xs text-blue-700">
-              <p><strong>Regular User:</strong></p>
-              <p>Email: user@aquapure.com</p>
-              <p>Password: user123</p>
-            </div>
-            <div class="text-xs text-blue-700">
-              <p><strong>Admin User:</strong></p>
-              <p>Email: admin@aquapure.com</p>
-              <p>Password: admin123</p>
-            </div>
-          </div>
-          <div class="mt-3 flex space-x-2">
-            <button
-              @click="fillUserCredentials"
-              class="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200"
-            >
-              Use User Demo
-            </button>
-            <button
-              @click="fillAdminCredentials"
-              class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded hover:bg-green-200"
-            >
-              Use Admin Demo
-            </button>
-          </div>
-        </div>
-
         <!-- Register Link -->
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-600">
@@ -152,50 +120,32 @@ const handleSubmit = async () => {
 
   try {
     // Mock authentication - replace with actual API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await authStore.login({
+        email: formData.value.email,
+        password: formData.value.password
+      })
 
-    // Mock user data based on email
-    let userData = null
-    if (formData.value.email === 'admin@aquapure.com' && formData.value.password === 'admin123') {
-      userData = {
-        id: 1,
-        email: 'admin@aquapure.com',
-        role: 'admin',
-        name: 'Admin User'
+      if (!response.success) {
+        throw new Error(response.error || 'Invalid credentials')
       }
-    } else if (formData.value.email === 'user@aquapure.com' && formData.value.password === 'user123') {
-      userData = {
-        id: 2,
-        email: 'user@aquapure.com',
-        role: 'user',
-        name: 'Regular User'
+
+      // Add success notification
+      notificationStore.addNotification({
+        id: Date.now(),
+        message: `Welcome back, ${authStore.user.name}!`,
+        sent_date: new Date().toISOString(),
+        is_read: false
+      })
+
+      // Redirect based on role
+      if (authStore.isAdmin) {
+        router.push('/admin/dashboard')
+      } else {
+        router.push('/')
       }
-    } else {
-      throw new Error('Invalid credentials')
-    }
-
-    // Set user data in auth store
-    authStore.user = userData
-    authStore.token = 'mock_token_' + Date.now()
-    authStore.isAuthenticated = true
-
-    // Store in localStorage
-    localStorage.setItem('auth_token', authStore.token)
-    localStorage.setItem('user', JSON.stringify(userData))
-
-    // Add success notification
-    notificationStore.addNotification({
-      id: Date.now(),
-      message: `Welcome back, ${userData.name}!`,
-      sent_date: new Date().toISOString(),
-      is_read: false
-    })
-
-    // Redirect based on role
-    if (userData.role === 'admin') {
-      router.push('/admin/dashboard')
-    } else {
-      router.push('/')
+    } catch (err) {
+      error.value = err.message
     }
 
   } catch (err) {

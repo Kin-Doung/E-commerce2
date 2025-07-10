@@ -16,10 +16,6 @@ class Stock extends Model
         return $this->hasMany(Category::class);
     }
     public function inventory(){
-        return $this->belongsTo(Inventory::class);
+        return $this->hasMany(Inventory::class);
     }
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
 }

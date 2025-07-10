@@ -12,6 +12,9 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\InventoryController;
 
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PriviewController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,12 +31,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('payments', PaymentController::class);
+// Authentication routes
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::apiResource('priviews', PriviewController::class);
 Route::apiResource('users', UserController::class);
 Route::apiResource('stocks', StockController::class);
 Route::apiResource('categories', CategoryController::class);
-Route::apiResource('products', ProductController::class);
-Route::apiResource('orders', OrderController::class);
 Route::apiResource('orderitems', OrderItemController::class);
 Route::apiResource('address', AddressController::class);
+
+Route::apiResource('orders', OrderController::class);
+Route::apiResource('products', ProductController::class);
+Route::apiResource('inventories', InventoryController::class);
+Route::apiResource('supplier', SupplierController::class);
+Route::apiResource('priview', PriviewController::class);
+
 Route::apiResource('inventories', InventoryController::class);

@@ -16,30 +16,14 @@
           <router-link to="/shop" class="text-gray-700 hover:text-blue-600 transition-colors">
             Shop
           </router-link>
-          <div class="relative group">
-            <!-- <button class="text-gray-700 hover:text-blue-600 transition-colors flex items-center">
-              Categories
-              <ChevronDownIcon class="h-4 w-4 ml-1" />
-            </button> -->
-            <router-link to="/category" class="text-gray-700 hover:text-blue-600 transition-colors">
-              Categories
-            </router-link>
-            <div
-              class="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-              <div class="py-2">
-                <router-link v-for="category in productStore.categories" :key="category.id"
-                  :to="`/shop?category=${category.id}`"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                  {{ category.name }}
-                </router-link>
-              </div>
-            </div>
-          </div>
           <router-link to="/about" class="text-gray-700 hover:text-blue-600 transition-colors">
             About
           </router-link>
           <router-link to="/contact" class="text-gray-700 hover:text-blue-600 transition-colors">
             Contact
+          </router-link>
+          <router-link to="/faq" class="text-gray-700 hover:text-blue-600 transition-colors">
+            FAQ
           </router-link>
         </div>
 
@@ -223,4 +207,31 @@ const handleSearch = () => {
     router.push('/shop')
   }
 }
+
+const logout = () => {
+  authStore.logout()
+  showUserMenu.value = false
+  router.push('/')
+}
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString()
+}
+
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.relative')) {
+    showNotifications.value = false
+    showUserMenu.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+// productStore.fetchCategories() // Uncomment if needed
 </script>
