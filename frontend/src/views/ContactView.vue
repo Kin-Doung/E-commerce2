@@ -1,6 +1,5 @@
 <script setup>
 import { MapPin, Phone, Mail, Clock } from "lucide-vue-next"
-
 import Button from "@/components/ui/button.vue"
 import Input from "@/components/ui/input.vue"
 import Textarea from "@/components/ui/textarea.vue"

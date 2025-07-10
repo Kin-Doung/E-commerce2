@@ -167,8 +167,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import {
   HomeIcon,
   BarChart2Icon,
@@ -188,6 +189,7 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 
 // Props
 const props = defineProps({
@@ -332,33 +334,24 @@ const getInventoryBadge = () => {
 }
 
 // User management
-const fetchCurrentUser = async () => {
-  try {
-    // Replace with actual API call
-    // const response = await api.getCurrentUser()
-    // currentUser.value = response.data
-    
-    // For now, get from localStorage or default
-    const userData = localStorage.getItem('currentUser')
-    if (userData) {
-      currentUser.value = JSON.parse(userData)
+watch(() => authStore.user, (newUser) => {
+  if (newUser) {
+    currentUser.value = {
+      name: newUser.name || 'Admin User',
+      role: newUser.role || 'Administrator'
     }
-  } catch (error) {
-    console.error('Error fetching current user:', error)
+  } else {
+    currentUser.value = {
+      name: '',
+      role: ''
+    }
   }
-}
+}, { immediate: true })
 
 const logout = async () => {
   try {
-    // Replace with actual logout API call
-    // await api.logout()
-    
-    // Clear local storage
-    localStorage.removeItem('currentUser')
-    localStorage.removeItem('authToken')
-    
-    // Redirect to login
-    router.push('/login')
+    authStore.logout()
+    router.push({ name: 'admin-login' })
   } catch (error) {
     console.error('Error during logout:', error)
   }
@@ -368,9 +361,6 @@ const logout = async () => {
 onMounted(() => {
   // Set initial active item based on current route
   activeItem.value = route.name || 'dashboard'
-  
-  // Fetch current user data
-  fetchCurrentUser()
 })
 </script>
 
@@ -398,6 +388,8 @@ nav::-webkit-scrollbar-thumb:hover {
 
 /* Smooth transitions */
 .router-link-active {
-  @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md;
+  background-image: linear-gradient(to right, #3b82f6, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
 }
 </style>

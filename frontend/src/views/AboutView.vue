@@ -83,7 +83,7 @@ const team = ref([
       </div>
       <div>
         <img
-          src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=600&h=400&fit=crop"
+          src="https://media.makrocambodiaclick.com/PRODUCT_1611651462421.jpeg"
           alt="AquaPure team"
           class="w-full h-auto rounded-lg shadow-lg"
         />
