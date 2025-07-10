@@ -34,6 +34,26 @@ const router = createRouter({
       name: "cart",
       component: () => import("../views/CartView.vue"),
     },
+    {
+      path: "/blog",
+      name: "blog",
+      component: () => import("../views/BlogView.vue"),
+    },
+    {
+      path: "/shipping",
+      name: "shipping",
+      component: () => import("../views/ShippingView.vue"),
+    },
+    {
+      path: "/returns",
+      name: "returns",
+      component: () => import("../views/ReturnsView.vue"),
+    },
+    {
+      path: "/warranty",
+      name: "warranty",
+      component: () => import("../views/WarrantyView.vue"),
+    },
     // ... other public routes ...
     {
       path: "/login",
@@ -140,6 +160,14 @@ router.beforeEach((to, from, next) => {
   } else {
     // Public routes, allow access
     next();
+  }
+});
+
+// Add afterEach hook to prevent caching of protected pages after logout
+router.afterEach((to, from) => {
+  if (to.path.startsWith('/admin')) {
+    // Disable back button caching by forcing reload
+    window.history.replaceState(null, '', to.fullPath);
   }
 });
 

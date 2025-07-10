@@ -410,433 +410,288 @@
   </header>
 </template>
 
-<script>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+<script setup>
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { storeToRefs } from 'pinia';
 
-export default {
-  name: 'AdminHeader',
-  props: {
-    globalSearch: {
-      type: String,
-      default: ''
-    },
-    showNotifications: {
-      type: Boolean,
-      default: false
-    },
-    showUserMenu: {
-      type: Boolean,
-      default: false
-    },
-    showQuickAdd: {
-      type: Boolean,
-      default: false
-    },
-    notifications: {
-      type: Array,
-      default: () => []
-    },
-    unreadNotifications: {
-      type: Number,
-      default: 0
-    },
-    toasts: {
-      type: Array,
-      default: () => []
-    },
-    isOnline: {
-      type: Boolean,
-      default: true
-    },
-    currentPage: {
-      type: String,
-      default: 'Overview'
-    },
-    // New props for search functionality
-    searchResults: {
-      type: Array,
-      default: () => []
-    },
-    isSearching: {
-      type: Boolean,
-      default: false
-    },
-    recentSearches: {
-      type: Array,
-      default: () => []
-    },
-    searchSuggestions: {
-      type: Array,
-      default: () => []
-    },
-    searchCategories: {
-      type: Array,
-      default: () => [
-        { key: 'all', label: 'All' },
-        { key: 'orders', label: 'Orders' },
-        { key: 'customers', label: 'Customers' },
-        { key: 'products', label: 'Products' },
-        { key: 'users', label: 'Users' }
-      ]
+// Initialize Pinia store
+const authStore = useAuthStore();
+const { 
+  user, 
+  searchResults, 
+  searchCategories, 
+  recentSearches, 
+  searchSuggestions, 
+  notifications, 
+  toasts, 
+  isSearching, 
+  isOnline, 
+  unreadNotifications, 
+  globalSearch, 
+  showQuickAdd 
+} = storeToRefs(authStore);
+
+// Reactive state
+const searchQuery = ref('');
+const showSearchResults = ref(false);
+const showNotifications = ref(false);
+const showUserMenu = ref(false);
+const isRefreshing = ref(false);
+const selectedCategory = ref('all');
+const searchTimeout = ref(null);
+const currentPage = ref('Overview'); // Default value for currentPage
+
+// Computed user data from auth store
+const userName = computed(() => user.value?.name || 'Admin User');
+const userEmail = computed(() => user.value?.email || 'admin@aquapure.com');
+const userRole = computed(() => user.value?.role || 'Administrator');
+
+// Computed user initials
+const userInitials = computed(() => {
+  return userName.value.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+});
+
+// Group search results by category
+const groupedResults = computed(() => {
+  if (!searchResults.value?.length) return {};
+
+  const filtered = selectedCategory.value === 'all' 
+    ? searchResults.value 
+    : searchResults.value.filter(result => result.type === selectedCategory.value.slice(0, -1));
+
+  return filtered.reduce((groups, result) => {
+    const category = result.type;
+    if (!groups[category]) {
+      groups[category] = [];
     }
-  },
-  
-  emits: [
-    'update:globalSearch',
-    'update:showNotifications', 
-    'update:showUserMenu',
-    'update:showQuickAdd',
-    'mark-all-as-read',
-    'clear-all-notifications',
-    'notification-click',
-    'remove-notification',
-    'remove-toast',
-    'export-data',
-    'refresh-data',
-    'open-user-profile',
-    'open-settings',
-    'view-activity-log',
-    'logout',
-    'search',
-    'select-search-result',
-    'select-recent-search',
-    'remove-recent-search',
-    'select-suggestion',
-    'clear-search',
-    'set-search-category'
-  ],
-  
-  setup(props, { emit }) {
-    // Reactive state
-    const searchQuery = ref(props.globalSearch)
-    const showSearchResults = ref(false)
-    const showNotifications = ref(props.showNotifications)
-    const showUserMenu = ref(props.showUserMenu)
-    const isRefreshing = ref(false)
-    const selectedCategory = ref('all')
-    const searchTimeout = ref(null)
-    
-    // User data
-    const userName = ref('Admin User')
-    const userEmail = ref('admin@aquapure.com')
-    const userRole = ref('Administrator')
-    
-    // Computed
-    const userInitials = computed(() => {
-      return userName.value.split(' ').map(n => n[0]).join('').toUpperCase()
-    })
-    
-    // Group search results by category
-    const groupedResults = computed(() => {
-      if (!props.searchResults.length) return {}
-      
-      const filtered = selectedCategory.value === 'all' 
-        ? props.searchResults 
-        : props.searchResults.filter(result => result.type === selectedCategory.value.slice(0, -1)) // Remove 's' from category
-      
-      return filtered.reduce((groups, result) => {
-        const category = result.type
-        if (!groups[category]) {
-          groups[category] = []
-        }
-        groups[category].push(result)
-        return groups
-      }, {})
-    })
-    
-    // Watch for search query changes
-    watch(() => props.globalSearch, (newValue) => {
-      searchQuery.value = newValue
-    })
-    
-    // Methods
-    const handleSearch = () => {
-      // Clear existing timeout
-      if (searchTimeout.value) {
-        clearTimeout(searchTimeout.value)
-      }
-      
-      // Debounce search
-      searchTimeout.value = setTimeout(() => {
-        emit('update:globalSearch', searchQuery.value)
-        emit('search', {
-          query: searchQuery.value,
-          category: selectedCategory.value
-        })
-      }, 300)
-    }
-    
-    const handleEnterSearch = () => {
-      if (searchTimeout.value) {
-        clearTimeout(searchTimeout.value)
-      }
-      emit('search', {
-        query: searchQuery.value,
-        category: selectedCategory.value
-      })
-    }
-    
-    const selectSearchResult = (result) => {
-      emit('select-search-result', result)
-      showSearchResults.value = false
-      searchQuery.value = ''
-      
-      // Add to recent searches if not already there
-      const recentSearch = {
-        id: Date.now(),
-        query: result.title,
-        timestamp: new Date()
-      }
-      emit('select-recent-search', recentSearch)
-    }
-    
-    const selectRecentSearch = (search) => {
-      searchQuery.value = search.query
-      emit('select-recent-search', search)
-      handleSearch()
-    }
-    
-    const removeRecentSearch = (id) => {
-      emit('remove-recent-search', id)
-    }
-    
-    const selectSuggestion = (suggestion) => {
-      searchQuery.value = suggestion.text
-      emit('select-suggestion', suggestion)
-      handleSearch()
-    }
-    
-    const clearSearch = () => {
-      searchQuery.value = ''
-      emit('clear-search')
-      emit('update:globalSearch', '')
-    }
-    
-    const closeSearch = () => {
-      showSearchResults.value = false
-    }
-    
-    const setSearchCategory = (category) => {
-      selectedCategory.value = category
-      emit('set-search-category', category)
-      if (searchQuery.value) {
-        handleSearch()
-      }
-    }
-    
-    const toggleNotifications = () => {
-      showNotifications.value = !showNotifications.value
-      emit('update:showNotifications', showNotifications.value)
-    }
-    
-    const toggleUserMenu = () => {
-      showUserMenu.value = !showUserMenu.value
-      emit('update:showUserMenu', showUserMenu.value)
-    }
-    
-    const toggleQuickAdd = () => {
-      emit('update:showQuickAdd', !props.showQuickAdd)
-    }
-    
-    const refreshData = async () => {
-      isRefreshing.value = true
-      emit('refresh-data')
-      setTimeout(() => {
-        isRefreshing.value = false
-      }, 1000)
-    }
-    
-    const markAllAsRead = () => {
-      emit('mark-all-as-read')
-    }
-    
-    const clearAllNotifications = () => {
-      emit('clear-all-notifications')
-    }
-    
-    const handleNotificationClick = (notification) => {
-      emit('notification-click', notification)
-    }
-    
-    const removeNotification = (id) => {
-      emit('remove-notification', id)
-    }
-    
-    const removeToast = (id) => {
-      emit('remove-toast', id)
-    }
-    
-    const openUserProfile = () => {
-      emit('open-user-profile')
-      showUserMenu.value = false
-    }
-    
-    const openSettings = () => {
-      emit('open-settings')
-      showUserMenu.value = false
-    }
-    
-    const viewActivityLog = () => {
-      emit('view-activity-log')
-      showUserMenu.value = false
-    }
-    
-    const exportData = () => {
-      emit('export-data')
-      showUserMenu.value = false
-    }
-    
-    const logout = () => {
-      emit('logout')
-      showUserMenu.value = false
-    }
-    
-    // Utility functions
-    const formatDate = (date) => {
-      return new Date(date).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true
-      })
-    }
-    
-    const getCategoryLabel = (categoryKey) => {
-      const category = props.searchCategories.find(cat => cat.key === categoryKey + 's')
-      return category ? category.label : categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)
-    }
-    
-    const getResultTypeClass = (type) => {
-      const classes = {
-        order: 'bg-blue-500',
-        customer: 'bg-green-500', 
-        product: 'bg-purple-500',
-        user: 'bg-orange-500',
-        invoice: 'bg-yellow-500',
-        report: 'bg-indigo-500'
-      }
-      return classes[type] || 'bg-gray-500'
-    }
-    
-    const getResultIcon = (type) => {
-      const icons = {
-        order: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-        customer: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-        product: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-        user: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-        invoice: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-        report: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
-      }
-      return icons[type] || icons.order
-    }
-    
-    const getStatusClass = (status) => {
-      const classes = {
-        active: 'bg-green-100 text-green-800',
-        inactive: 'bg-gray-100 text-gray-800',
-        pending: 'bg-yellow-100 text-yellow-800',
-        completed: 'bg-blue-100 text-blue-800',
-        cancelled: 'bg-red-100 text-red-800'
-      }
-      return classes[status] || 'bg-gray-100 text-gray-800'
-    }
-    
-    const getToastClass = (type) => {
-      const classes = {
-        success: 'border-green-500 text-green-600',
-        error: 'border-red-500 text-red-600',
-        info: 'border-blue-500 text-blue-600',
-        warning: 'border-yellow-500 text-yellow-600'
-      }
-      return classes[type] || classes.info
-    }
-    
-    const getToastIcon = (type) => {
-      const icons = {
-        success: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-        error: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-        info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-        warning: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-      }
-      return icons[type] || icons.info
-    }
-    
-    // Close dropdowns when clicking outside
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('.relative')) {
-        showSearchResults.value = false
-        showNotifications.value = false
-        showUserMenu.value = false
-      }
-    }
-    
-    // Lifecycle
-    onMounted(() => {
-      document.addEventListener('click', handleClickOutside)
-    })
-    
-    onUnmounted(() => {
-      document.removeEventListener('click', handleClickOutside)
-      if (searchTimeout.value) {
-        clearTimeout(searchTimeout.value)
-      }
-    })
-    
-    return {
-      // Reactive state
-      searchQuery,
-      showSearchResults,
-      showNotifications,
-      showUserMenu,
-      isRefreshing,
-      selectedCategory,
-      
-      // User data
-      userName,
-      userEmail,
-      userRole,
-      
-      // Computed
-      userInitials,
-      groupedResults,
-      
-      // Methods
-      handleSearch,
-      handleEnterSearch,
-      selectSearchResult,
-      selectRecentSearch,
-      removeRecentSearch,
-      selectSuggestion,
-      clearSearch,
-      closeSearch,
-      setSearchCategory,
-      toggleNotifications,
-      toggleUserMenu,
-      toggleQuickAdd,
-      refreshData,
-      markAllAsRead,
-      clearAllNotifications,
-      handleNotificationClick,
-      removeNotification,
-      removeToast,
-      openUserProfile,
-      openSettings,
-      viewActivityLog,
-      exportData,
-      logout,
-      
-      // Utility functions
-      formatDate,
-      getCategoryLabel,
-      getResultTypeClass,
-      getResultIcon,
-      getStatusClass,
-      getToastClass,
-      getToastIcon
-    }
+    groups[category].push(result);
+    return groups;
+  }, {});
+});
+
+// Watch for search query changes
+watch(globalSearch, (newValue) => {
+  searchQuery.value = newValue;
+});
+
+// Close dropdowns when clicking outside
+const closeDropdowns = (event) => {
+  if (!event.target.closest('.relative')) {
+    showSearchResults.value = false;
+    showNotifications.value = false;
+    showUserMenu.value = false;
   }
-}
+};
+
+// Lifecycle hooks
+onMounted(() => {
+  document.addEventListener('click', closeDropdowns);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdowns);
+  if (searchTimeout.value) {
+    clearTimeout(searchTimeout.value);
+  }
+});
+
+// Methods
+const handleSearch = () => {
+  if (searchTimeout.value) {
+    clearTimeout(searchTimeout.value);
+  }
+  searchTimeout.value = setTimeout(() => {
+    authStore.updateGlobalSearch(searchQuery.value);
+  }, 300);
+};
+
+const handleEnterSearch = () => {
+  if (searchTimeout.value) {
+    clearTimeout(searchTimeout.value);
+  }
+  authStore.search({
+    query: searchQuery.value,
+    category: selectedCategory.value,
+  });
+};
+
+const selectSearchResult = (result) => {
+  authStore.selectSearchResult(result);
+  showSearchResults.value = false;
+  searchQuery.value = '';
+};
+
+const selectRecentSearch = (search) => {
+  searchQuery.value = search.query;
+  authStore.selectRecentSearch(search);
+  handleSearch();
+};
+
+const removeRecentSearch = (id) => {
+  authStore.removeRecentSearch(id);
+};
+
+const selectSuggestion = (suggestion) => {
+  searchQuery.value = suggestion.text;
+  authStore.selectSuggestion(suggestion);
+  handleSearch();
+};
+
+const clearSearch = () => {
+  searchQuery.value = '';
+  authStore.clearSearch();
+};
+
+const closeSearch = () => {
+  showSearchResults.value = false;
+};
+
+const setSearchCategory = (category) => {
+  selectedCategory.value = category;
+  authStore.setSearchCategory(category);
+  if (searchQuery.value) {
+    handleSearch();
+  }
+};
+
+const toggleNotifications = () => {
+  showNotifications.value = !showNotifications.value;
+  authStore.updateShowNotifications(showNotifications.value);
+};
+
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value;
+  authStore.updateShowUserMenu(showUserMenu.value);
+};
+
+const toggleQuickAdd = () => {
+  authStore.updateShowQuickAdd(!showQuickAdd.value);
+};
+
+const refreshData = async () => {
+  isRefreshing.value = true;
+  await authStore.refreshData();
+  setTimeout(() => {
+    isRefreshing.value = false;
+  }, 1000);
+};
+
+const markAllAsRead = () => {
+  authStore.markAllAsRead();
+};
+
+const clearAllNotifications = () => {
+  authStore.clearAllNotifications();
+};
+
+const handleNotificationClick = (notification) => {
+  authStore.notificationClick(notification);
+};
+
+const removeNotification = (id) => {
+  authStore.removeNotification(id);
+};
+
+const removeToast = (id) => {
+  authStore.removeToast(id);
+};
+
+const openUserProfile = () => {
+  authStore.openUserProfile();
+  showUserMenu.value = false;
+};
+
+const openSettings = () => {
+  authStore.openSettings();
+  showUserMenu.value = false;
+};
+
+const viewActivityLog = () => {
+  authStore.viewActivityLog();
+  showUserMenu.value = false;
+};
+
+const exportData = () => {
+  authStore.exportData();
+  showUserMenu.value = false;
+};
+
+const logout = () => {
+  authStore.logout();
+  showUserMenu.value = false;
+};
+
+const formatDate = (date) => {
+  if (!date) return '';
+  return new Date(date).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
+};
+
+const getCategoryLabel = (categoryKey) => {
+  const category = searchCategories.value.find(cat => cat.key === categoryKey + 's');
+  return category ? category.label : categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1);
+};
+
+const getResultTypeClass = (type) => {
+  const classes = {
+    order: 'bg-blue-500',
+    customer: 'bg-green-500',
+    product: 'bg-purple-500',
+    user: 'bg-orange-500',
+    invoice: 'bg-yellow-500',
+    report: 'bg-indigo-500',
+  };
+  return classes[type] || 'bg-gray-500';
+};
+
+const getResultIcon = (type) => {
+  const icons = {
+    order: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    customer: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+    product: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+    user: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+    invoice: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    report: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+  };
+  return icons[type] || icons.order;
+};
+
+const getStatusClass = (status) => {
+  const classes = {
+    active: 'bg-green-100 text-green-800',
+    inactive: 'bg-gray-100 text-gray-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    completed: 'bg-blue-100 text-blue-800',
+    cancelled: 'bg-red-100 text-red-800',
+  };
+  return classes[status] || 'bg-gray-100 text-gray-800';
+};
+
+const getToastClass = (type) => {
+  const classes = {
+    success: 'border-green-500 text-green-600',
+    error: 'border-red-500 text-red-600',
+    info: 'border-blue-500 text-blue-600',
+    warning: 'border-yellow-500 text-yellow-600',
+  };
+  return classes[type] || classes.info;
+};
+
+const getToastIcon = (type) => {
+  const icons = {
+    success: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+    error: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    warning: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+  };
+  return icons[type] || icons.info;
+};
 </script>
 
 <style scoped>

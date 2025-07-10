@@ -42,6 +42,8 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 import TopNavigation from "../components/admin/TopNavigation.vue";
 import Sidebar from "../components/admin/Sidebar.vue";
 
@@ -56,11 +58,19 @@ const toasts = ref([]);
 const isOnline = ref(true);
 const lastUpdated = ref(new Date().toISOString());
 
+const router = useRouter();
+const authStore = useAuthStore();
+
 // Emit functions (implement as needed)
 const updateGlobalSearch = (value) => {
   globalSearch.value = value;
 };
 // ... other handlers ...
+
+const logout = () => {
+  authStore.logout();
+  router.push({ name: "admin-login" });
+};
 
 const sidebarItems = ref([
   {
