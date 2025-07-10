@@ -49,7 +49,7 @@
           </div>
           <div class="relative">
             <img
-              src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=600&fit=crop"
+              src="https://www.allrecipes.com/thmb/xZJqRRvvF5o-KH9uLefDBEYBfng=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/alr-tier-3-primary-filtered-water-bottles-nsimpson-1882-538eb83691db4b9183260180bbe3d895.jpeg"
               alt="Premium water products"
               class="w-full h-auto rounded-lg shadow-2xl"
             />

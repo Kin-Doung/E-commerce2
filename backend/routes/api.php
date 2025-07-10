@@ -42,6 +42,7 @@ Route::apiResource('stocks', StockController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('orderitems', OrderItemController::class);
 Route::apiResource('address', AddressController::class);
+Route::apiResource('payments', PaymentController::class);
 
 Route::apiResource('orders', OrderController::class);
 Route::apiResource('products', ProductController::class);
