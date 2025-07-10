@@ -87,4 +87,12 @@ class InventoryController extends Controller
 
         return response()->json(['message' => 'Deleted']);
     }
+    /**
+     * Get the total quantity of all inventory records.
+     */
+    public function totalQuantity()
+    {
+        $total = Inventory::sum('quantity');
+        return response()->json(['total_quantity' => $total]);
+    }
 }

@@ -1,39 +1,51 @@
 <script setup>
-import { Award, Users, Leaf, Target } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { Award, Users, Leaf, Target } from "lucide-vue-next";
+import { ref } from "vue";
 
 const values = ref([
   {
     icon: Award,
-    title: 'Quality First',
+    title: "Quality First",
     description:
-      'We never compromise on quality. Every product undergoes rigorous testing to ensure it meets our high standards.',
+      "We never compromise on quality. Every product undergoes rigorous testing to ensure it meets our high standards.",
   },
   {
     icon: Users,
-    title: 'Customer Focused',
+    title: "Customer Focused",
     description:
-      'Our customers are at the heart of everything we do. We listen, learn, and continuously improve based on your feedback.',
+      "Our customers are at the heart of everything we do. We listen, learn, and continuously improve based on your feedback.",
   },
   {
     icon: Leaf,
-    title: 'Environmental Responsibility',
+    title: "Environmental Responsibility",
     description:
-      'We are committed to sustainable practices and reducing our environmental footprint through eco-friendly products.',
+      "We are committed to sustainable practices and reducing our environmental footprint through eco-friendly products.",
   },
   {
     icon: Target,
-    title: 'Innovation',
+    title: "Innovation",
     description:
-      'We continuously invest in research and development to bring you the latest in water purification technology.',
+      "We continuously invest in research and development to bring you the latest in water purification technology.",
   },
-])
+]);
 
 const team = ref([
-  { name: 'Mr. Kin Doung', role: 'CEO & Founder', image: 'src/assets/images/profileKin.png' },
-  { name: 'Ms. Linna Rin', role: 'CTO', image: 'src/assets/images/profileLinna.png' },
-  { name: 'Mr. Kartrok Thy', role: 'Head of Product', image: 'src/assets/images/profileKartrok.jpg' },
-])
+  {
+    name: "Mr. Kin Doung",
+    role: "CEO & Founder",
+    image: "src/assets/images/profileKin.png",
+  },
+  {
+    name: "Ms. Linna Rin",
+    role: "CTO",
+    image: "src/assets/images/profileLinna.png",
+  },
+  {
+    name: "Mr. Kartrok Thy",
+    role: "Head of Product",
+    image: "src/assets/images/profileKartrok.jpg",
+  },
+]);
 </script>
 
 <template>
@@ -42,7 +54,8 @@ const team = ref([
     <div class="text-center mb-16">
       <h1 class="text-4xl font-bold text-blue-900 mb-6">About AquaPure</h1>
       <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        For over a decade, we've been dedicated to providing clean, healthy water solutions that improve lives and protect our planet.
+        For over a decade, we've been dedicated to providing clean, healthy
+        water solutions that improve lives and protect our planet.
       </p>
     </div>
 
@@ -51,17 +64,21 @@ const team = ref([
       <div>
         <h2 class="text-3xl font-bold text-blue-900 mb-6">Our Story</h2>
         <p class="text-gray-600 mb-4">
-          Founded in 2014, AquaPure began with a simple mission: to make clean, healthy water accessible to everyone.
-          What started as a small family business has grown into a trusted brand serving thousands of customers worldwide.
+          Founded in 2014, AquaPure began with a simple mission: to make clean,
+          healthy water accessible to everyone. What started as a small family
+          business has grown into a trusted brand serving thousands of customers
+          worldwide.
         </p>
         <p class="text-gray-600 mb-4">
-          Our founders, passionate about environmental sustainability and public health, recognized the growing need
-          for reliable water purification solutions. They set out to create products that not only deliver exceptional
-          performance but also minimize environmental impact.
+          Our founders, passionate about environmental sustainability and public
+          health, recognized the growing need for reliable water purification
+          solutions. They set out to create products that not only deliver
+          exceptional performance but also minimize environmental impact.
         </p>
         <p class="text-gray-600">
-          Today, we continue to innovate and expand our product line, always staying true to our core values of
-          quality, sustainability, and customer satisfaction.
+          Today, we continue to innovate and expand our product line, always
+          staying true to our core values of quality, sustainability, and
+          customer satisfaction.
         </p>
       </div>
       <div>
@@ -77,18 +94,20 @@ const team = ref([
     <div class="mb-20">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-blue-900 mb-4">Our Values</h2>
-        <p class="text-xl text-gray-600">The principles that guide everything we do</p>
+        <p class="text-xl text-gray-600">
+          The principles that guide everything we do
+        </p>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div
-          v-for="(value, index) in values"
-          :key="index"
-          class="text-center"
-        >
-          <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <div v-for="(value, index) in values" :key="index" class="text-center">
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4"
+          >
             <component :is="value.icon" class="h-8 w-8 text-blue-600" />
           </div>
-          <h3 class="text-xl font-semibold text-blue-900 mb-3">{{ value.title }}</h3>
+          <h3 class="text-xl font-semibold text-blue-900 mb-3">
+            {{ value.title }}
+          </h3>
           <p class="text-gray-600">{{ value.description }}</p>
         </div>
       </div>
@@ -119,13 +138,11 @@ const team = ref([
     <!-- Team Section -->
     <div class="text-center">
       <h2 class="text-3xl font-bold text-blue-900 mb-4">Meet Our Team</h2>
-      <p class="text-xl text-gray-600 mb-12">The passionate people behind AquaPure</p>
+      <p class="text-xl text-gray-600 mb-12">
+        The passionate people behind AquaPure
+      </p>
       <div class="grid md:grid-cols-3 gap-8">
-        <div
-          v-for="(member, index) in team"
-          :key="index"
-          class="text-center"
-        >
+        <div v-for="(member, index) in team" :key="index" class="text-center">
           <img
             :src="member.image"
             :alt="member.name"

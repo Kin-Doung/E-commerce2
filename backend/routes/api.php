@@ -50,3 +50,7 @@ Route::apiResource('supplier', SupplierController::class);
 Route::apiResource('priview', PriviewController::class);
 
 Route::apiResource('inventories', InventoryController::class);
+
+Route::get('/inventory/total-quantity', [InventoryController::class, 'totalQuantity']);
+
+Route::get('stocks/total-quantity', [StockController::class, 'totalQuantity']);
